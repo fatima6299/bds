@@ -13,7 +13,7 @@ export default function Home() {
           <h1>Bienvenue sur BDS BUSINESS</h1>
           <p>
             Découvrez nos dernières collections, offres et produits phares.
-            Cette page est publique : tout le monde peut y accéder, connecté ou non.
+            
           </p>
         </div>
       </section>

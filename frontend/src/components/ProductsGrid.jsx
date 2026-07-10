@@ -183,7 +183,9 @@ export default function ProductsGrid() {
             {products.map((product) => (
               <article className="product-card" key={product.id}>
                 <div className="product-image-container">
-                  <img src={product.image_url} alt={product.name} className="product-image" />
+                  <Link to={product.details_url} className="product-image-link">
+                    <img src={product.image_url} alt={product.name} className="product-image" />
+                  </Link>
                 </div>
                 <div className="product-info">
                   <div className="product-category">{product.category}</div>

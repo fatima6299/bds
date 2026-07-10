@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Auth } from '../services/apiClient';
+import logo from '../../images/logo-bdsbusiness.png';
 
 export default function Header() {
   const location = useLocation();
@@ -15,7 +16,7 @@ export default function Header() {
       <div className="container header-container">
         <div className="logo">
           <Link to="/">
-            <img src="images/logo-bdsbusiness.png" alt="BDS BUSINESS Logo" className="logo-img" />
+            <img src={logo} alt="BDS BUSINESS Logo" className="logo-img" />
             <span className="logo-text">BDS BUSINESS</span>
           </Link>
         </div>

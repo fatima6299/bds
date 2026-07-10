@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mes Commandes - BDS BUSINESS</title>
+
+  <link rel="stylesheet" href="css/style.css">    <link rel="stylesheet" href="css/responsive.css">  <link rel="stylesheet" href="css/orders.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+<header class="header">
+  <div class="container">
+    <div class="logo">
+      <a href="index.html">
+        <img src="images/logo-bdsbusiness.png" alt="BDS BUSINESS Logo" class="logo-img">
+        <span class="logo-text">BDS BUSINESS</span>
+      </a>
+    </div>
+
+    <nav class="main-nav">
+      <ul>
+        <li><a href="index.html">Accueil</a></li>
+        <li><a href="products/abayas.html">Abayas</a></li>
+        <li><a href="products/vetements-homme.html">Vêtements Homme</a></li>
+        <li><a href="products/ordinateurs.html">Ordinateurs</a></li>
+        <li><a href="products/montres.html">Montres</a></li>
+        <li><a href="contact.html">Contact</a></li>
+      </ul>
+    </nav>
+
+    <div class="header-actions">
+      <a href="login.html" class="account" title="Mon compte">
+        <i class="fas fa-user"></i>
+      </a>
+      <a href="cart.html" class="cart" title="Panier">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count">0</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<!-- ================= PAGE TITLE ================= -->
+<div class="orders-header">
+  <h1><i class="fas fa-box"></i> Mes Commandes</h1>
+  <p id="orders-count-header">0 commande(s)</p>
+</div>
+
+<!-- ================= ORDERS SUMMARY ================= -->
+<div class="orders-summary">
+  <div class="summary-grid">
+    <div class="summary-card">
+      <h3>Total des commandes</h3>
+      <p class="total-amount" id="total-orders">0 FCFA</p>
+    </div>
+    <div class="summary-card pending-amount">
+      <h3>À payer</h3>
+      <p class="total-amount" id="pending-amount">0 FCFA</p>
+      <button id="payAllButton" class="btn-pay-all" style="display: none;">
+        <i class="fas fa-credit-card"></i> Payer le total
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= ORDERS CONTENT ================= -->
+<div class="orders-container">
+  <h2><i class="fas fa-history"></i> Historique des commandes</h2>
+  <div id="orders-content">
+    <!-- Chargement dynamique -->
+  </div>
+</div>
+
+<!-- La section des moyens de paiement sera intégrée ultérieurement -->
+
+<!-- ================= LOADING ================= -->
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+</div>
+
+<!-- ================= FOOTER ================= -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-content">
+
+      <div class="footer-section">
+        <h3>BDS BUSINESS</h3>
+        <p>Votre partenaire de confiance pour vos achats en ligne.</p>
+      </div>
+
+      <div class="footer-section">
+        <h3>Liens rapides</h3>
+        <ul>
+          <li><a href="index.html">Accueil</a></li>
+          <li><a href="products/abayas.html">Abayas</a></li>
+          <li><a href="products/vetements-homme.html">Vêtements Homme</a></li>
+          <li><a href="products/ordinateurs.html">Ordinateurs</a></li>
+          <li><a href="products/montres.html">Montres</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-section">
+        <h3>Paiements acceptés</h3>
+        <div class="payment-methods">
+          <i class="fas fa-money-bill-wave"></i>
+          <i class="fas fa-mobile-alt"></i>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="footer-bottom">
+      <p>&copy; 2025 BDS BUSINESS. Tous droits réservés.</p>
+    </div>
+  </div>
+</footer>
+
+<!-- ================= SCRIPTS ================= -->
+<script src="js/api.js"></script>
+
+<script>
+let ordersData = [];
+
+document.addEventListener('DOMContentLoaded', async () => {
+  if (!Auth.isAuthenticated()) {
+    alert('Veuillez vous connecter pour voir vos commandes');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  await loadOrders();
+  updateUserDisplay();
+});
+
+async function loadOrders() {
+  showLoading();
+  try {
+    const response = await Orders.getMy();
+    ordersData = response.orders || [];
+    displayOrders(response.count || ordersData.length);
+  } catch (error) {
+    showError('Erreur lors du chargement des commandes');
+  } finally {
+    hideLoading();
+  }
+}
+
+function calculateOrderTotals() {
+  let totalAmount = 0;
+  let pendingAmount = 0;
+  let hasPendingOrders = false;
+
+  ordersData.forEach(order => {
+    const amount = parseFloat(order.total_amount) || 0;
+    totalAmount += amount;
+    
+    if (order.payment_status === 'pending') {
+      pendingAmount += amount;
+      hasPendingOrders = true;
+    }
+  });
+
+  return { totalAmount, pendingAmount, hasPendingOrders };
+}
+
+function updatePaymentButton(pendingAmount) {
+  const payAllButton = document.getElementById('payAllButton');
+  if (pendingAmount > 0) {
+    payAllButton.style.display = 'inline-flex';
+    payAllButton.onclick = () => processPayment(pendingAmount);
+  } else {
+    payAllButton.style.display = 'none';
+  }
+}
+
+function displayOrders(count) {
+  const ordersContent = document.getElementById('orders-content');
+  const ordersCountHeader = document.getElementById('orders-count-header');
+  const totalOrdersElement = document.getElementById('total-orders');
+  const pendingAmountElement = document.getElementById('pending-amount');
+  const payAllButton = document.getElementById('payAllButton');
+
+  // Mettre à jour le compteur de commandes
+  ordersCountHeader.textContent = `${count} commande${count > 1 ? 's' : ''}`;
+
+  // Initialiser les totaux
+  let totalAmount = 0;
+  let pendingAmount = 0;
+
+  // Calculer les totaux
+  ordersData.forEach(order => {
+    const amount = parseFloat(order.total_amount) || 0;
+    totalAmount += amount;
+    
+    if (order.payment_status === 'pending') {
+      pendingAmount += amount;
+    }
+  });
+
+  // Mettre à jour l'affichage des totaux
+  totalOrdersElement.textContent = `${formatPrice(totalAmount)} FCFA`;
+  pendingAmountElement.textContent = `${formatPrice(pendingAmount)} FCFA`;
+
+  // Afficher/masquer le bouton de paiement global
+  if (pendingAmount > 0) {
+    payAllButton.style.display = 'inline-flex';
+    payAllButton.onclick = () => processPayment(pendingAmount);
+  } else {
+    payAllButton.style.display = 'none';
+  }
+
+  // Afficher le message si aucune commande
+  if (count === 0) {
+    ordersContent.innerHTML = `
+      <div class="empty-orders">
+        <i class="fas fa-box-open"></i>
+        <h2>Aucune commande</h2>
+        <p>Vous n'avez pas encore passé de commande.</p>
+        <a href="index.html" class="shop-now-btn">
+          <i class="fas fa-shopping-bag"></i> Découvrir nos produits
+        </a>
+      </div>
+    `;
+    return;
+  }
+
+  // Afficher la liste des commandes
+  ordersContent.innerHTML = ordersData.map(order => `
+    <div class="order-card">
+      <div class="order-header">
+        <h3>Commande #${order.id}</h3>
+        ${getPaymentBadge(order.payment_status)}
+      </div>
+
+      <p><strong>Date :</strong> ${new Date(order.created_at).toLocaleDateString()}</p>
+      <p><strong>Total :</strong> ${formatPrice(order.total_amount)} FCFA</p>
+      <p><strong>Paiement :</strong> ${order.payment_status === 'pending' ? 'En attente' : 'Payé'}</p>
+      <p><strong>Livraison :</strong> ${getOrderStatus(order.order_status)}</p>
+
+      <div class="order-actions">
+        <a href="order-details.html?id=${order.id}" class="btn-secondary">
+          <i class="fas fa-eye"></i> Détails
+        </a>
+      </div>
+    </div>
+  `).join('');
+}
+
+function getPaymentBadge(status) {
+  switch (status) {
+    case 'paid':
+      return `<span class="badge badge-paid">Payé</span>`;
+    case 'pending':
+      return `<span class="badge badge-pending">En attente</span>`;
+    case 'failed':
+      return `<span class="badge badge-failed">Échec</span>`;
+    default:
+      return `<span class="badge">${status}</span>`;
+  }
+}
+
+function getOrderStatus(status) {
+  switch (status) {
+    case 'created': return 'Créée';
+    case 'processing': return 'En préparation';
+    case 'shipped': return 'Expédiée';
+    case 'delivered': return 'Livrée';
+    case 'cancelled': return 'Annulée';
+    default: return status;
+  }
+}
+
+function formatPrice(price) {
+  return parseFloat(price).toLocaleString('fr-FR');
+}
+
+function showLoading() {
+  document.getElementById('loadingOverlay').classList.add('active');
+}
+
+function hideLoading() {
+  document.getElementById('loadingOverlay').classList.remove('active');
+}
+
+function showError(message) {
+  document.getElementById('orders-content').innerHTML = `
+    <div class="empty-orders">
+      <i class="fas fa-exclamation-triangle"></i>
+      <h2>Erreur</h2>
+      <p>${message}</p>
+      <button onclick="loadOrders()" class="shop-now-btn">
+        <i class="fas fa-redo"></i> Réessayer
+      </button>
+    </div>
+  `;
+}
+
+function processPayment(amount) {
+  // Sauvegarder le montant total pour l'utiliser dans le processus de paiement
+  localStorage.setItem('pendingAmount', amount);
+  
+  // Récupérer les IDs des commandes en attente
+  const pendingOrderIds = ordersData
+    .filter(order => order.payment_status === 'pending')
+    .map(order => order.id);
+  
+  // Sauvegarder les IDs des commandes pour le traitement ultérieur
+  localStorage.setItem('pendingOrderIds', JSON.stringify(pendingOrderIds));
+  
+  // Rediriger vers la page de livraison
+  window.location.href = 'delivery.html';
+}
+
+function updateUserDisplay() {
+  const user = Auth.getCurrentUser();
+  const accountLink = document.querySelector('.account');
+  if (user && accountLink) {
+    accountLink.title = user.firstname;
+    accountLink.href = 'profile.html';
+  }
+}
+</script>
+
+</body>
+</html>

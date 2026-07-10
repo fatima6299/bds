@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BDS BUSINESS - Votre Boutique en Ligne</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/account.css">
+    <link rel="stylesheet" href="css/cart.css">
+    <link rel="stylesheet" href="css/modals.css">
+    <link rel="stylesheet" href="css/hero.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- En-tête -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="index.html">
+                    <img src="images/logo-bdsbusiness.png" alt="BDS BUSINESS Logo" class="logo-img">
+                    <span class="logo-text">BDS BUSINESS</span>
+                </a>
+            </div>
+            
+            <!-- Barre de recherche -->
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Rechercher des produits...">
+                <button class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+            
+            <div class="header-actions">
+                <a href="#" class="account" id="accountLink" title="Mon compte">
+                    <i class="fas fa-user"></i>
+                </a>
+                <a href="cart.html" class="cart" title="Panier">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+            </div>
+            <!-- Menu déroulant utilisateur -->
+        <div class="user-menu" id="userMenu">
+            <div class="user-menu-header">
+                <div class="user-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <div class="user-info">
+                    <span id="userGreeting">Bonjour, Identifiez-vous</span>
+                    <span class="user-email hidden" id="userEmail"></span>
+                </div>
+            </div>
+            <div class="user-menu-links">
+                <a href="profile.html"><i class="fas fa-user-circle"></i> Mon Compte</a>
+                <a href="orders.html"><i class="fas fa-shopping-bag"></i> Mes Commandes</a>
+                <a href="wishlist.html"><i class="fas fa-heart"></i> Ma Liste d'envies</a>
+                <div class="menu-divider"></div>
+                <a href="login.html" id="loginLink"><i class="fas fa-sign-in-alt"></i> Se connecter</a>
+                <a href="register.html" id="registerLink"><i class="fas fa-user-plus"></i> S'inscrire</a>
+                <a href="#" id="logoutLink" class="hidden"><i class="fas fa-sign-out-alt"></i> Se déconnecter</a>
+            </div>
+        </div>
+            <script>
+                // Vérifier si l'utilisateur est connecté au chargement
+                document.addEventListener('DOMContentLoaded', () => {
+                    const accountLink = document.getElementById('accountLink');
+                    
+                    // Vérifier si l'utilisateur est connecté
+                    const token = localStorage.getItem('bds_token');
+                    if (!token) {
+                        // Rediriger vers la page de connexion si non connecté
+                        accountLink.href = 'login.html';
+                        accountLink.title = 'Se connecter';
+                    }
+                });
+            </script>
+        </div>
+    </header>
+
+    <!-- Hero Slider -->
+    <section class="hero-section">
+        <div class="hero-slider">
+            <!-- Slide 1 -->
+            <div class="hero-slide" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/slide1.jpg');">
+                <div class="hero-content">
+                    <h2>Nouvelle Collection d'Abayas</h2>
+                    <p>Découvrez nos dernières créations élégantes et raffinées pour toutes les occasions.</p>
+                    <a href="products/abayas.html" class="hero-cta">Voir la collection</a>
+                </div>
+            </div>
+            
+            <!-- Slide 2 -->
+            <div class="hero-slide" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/slide22.jpeg');">
+                <div class="hero-content">
+                    <h2>Équipez-vous avec BDS TECH</h2>
+                    <p>Les meilleurs ordinateurs portables aux prix les plus compétitifs du marché.</p>
+                    <a href="#" class="hero-cta">Découvrir</a>
+                </div>
+            </div>
+            
+            <!-- Slide 3 -->
+            <div class="hero-slide" style="background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/slide3.jpg');">
+                <div class="hero-content">
+                    <h2>Soldes d'Été - Jusqu'à -50%</h2>
+                    <p>Profitez de réductions exceptionnelles sur une sélection d'articles.</p>
+                    <a href="#" class="hero-cta">Voir les offres</a>
+                </div>
+            </div>
+            
+            <!-- Slider Navigation -->
+            <div class="slider-nav">
+                <button class="prev-slide"><i class="fas fa-chevron-left"></i></button>
+                <button class="next-slide"><i class="fas fa-chevron-right"></i></button>
+            </div>
+            
+            <!-- Slider Dots -->
+            <div class="slider-dots">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Catégories avec icônes -->
+    <section class="categories-icons">
+        <div class="container">
+            <h2 class="section-title">Nos Catégories</h2>
+            <div class="categories-grid">
+                <a href="products/abayas.html" class="category-card">
+                    <div class="category-icon">
+                        <img src="images/products/abayas/im.jpg" alt="Abayas">
+                    </div>
+                    <h3>Abayas</h3>
+                </a>
+                
+                <a href="products/vetements-homme.html" class="category-card">
+                    <div class="category-icon">
+                        <img src="images/products/men/im2.jpeg" alt="Vêtements Homme">
+                    </div>
+                    <h3>Vêtements Homme</h3>
+                </a>
+                
+                <a href="products/ordinateurs.html" class="category-card">
+                    <div class="category-icon">
+                        <img src="images/products/computers/im3.jpeg" alt="Ordinateurs">
+                    </div>
+                    <h3>Ordinateurs</h3>
+                </a>
+                
+                <a href="products/montres.html" class="category-card">
+                    <div class="category-icon">
+                        <img src="images/products/watches/im.jpg" alt="Montres">
+                    </div>
+                    <h3>Montres</h3>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Filtres et tri -->
+    <div class="filters-container">
+        <div class="container">
+            <button class="filter-toggle"><i class="fas fa-sliders-h"></i> Filtres</button>
+            <div class="sort-by">
+                <label for="sort">Trier par :</label>
+                <select id="sort">
+                    <option value="featured">En vedette</option>
+                    <option value="price_asc">Prix croissant</option>
+                    <option value="price_desc">Prix décroissant</option>
+                    <option value="newest">Nouveautés</option>
+                    <option value="rating">Mieux notés</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- Produits en vedette -->
+    <section class="featured-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Produits en Vedette</h2>
+                <p>Découvrez nos meilleures ventes et nouveautés</p>
+            </div>
+            
+            <div class="featured-grid">
+                <!-- Les produits seront chargés dynamiquement par JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Tous les produits -->
+    <section class="products-grid">
+        <div class="container">
+            <div class="filters-sidebar">
+                <div class="filter-section">
+                    <h3>Catégories</h3>
+                    <div class="filter-options">
+                        <label><input type="checkbox" name="category" value="Abayas" checked> Abayas</label>
+                        <label><input type="checkbox" name="category" value="Vêtements Homme" checked> Vêtements Homme</label>
+                        <label><input type="checkbox" name="category" value="Ordinateurs" checked> Ordinateurs</label>
+                        <label><input type="checkbox" name="category" value="Montres" checked> Montres</label>
+                    </div>
+                </div>
+                <div class="filter-section">
+                    <h3>Prix (FCFA)</h3>
+                    <div class="price-range">
+                        <input type="range" id="priceRange" min="0" max="1000000" step="1000" value="1000000">
+                        <div class="price-labels">
+                            <span>0</span>
+                            <span id="maxPrice">1 000 000</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="filter-section">
+                    <h3>Vendeur</h3>
+                    <div class="filter-options">
+                        <label><input type="checkbox" name="seller" value="BDS FASHION" checked> BDS FASHION</label>
+                        <label><input type="checkbox" name="seller" value="BDS TECH" checked> BDS TECH</label>
+                    </div>
+                </div>
+                <button class="apply-filters">Appliquer les filtres</button>
+            </div>
+            
+            <div class="products-container">
+                <div id="productGrid" class="product-grid">
+                    <!-- Les produits seront chargés dynamiquement -->
+                </div>
+                <div class="pagination">
+                    <button class="prev-page" disabled><i class="fas fa-chevron-left"></i> Précédent</button>
+                    <div class="page-numbers">
+                        <span class="current-page">1</span>
+                        <span>sur</span>
+                        <span class="total-pages">1</span>
+                    </div>
+                    <button class="next-page" disabled>Suivant <i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pied de page -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>BDS BUSINESS</h3>
+                    <p>Votre partenaire de confiance pour tous vos achats en ligne.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Liens rapides</h3>
+                    <ul>
+                        <li><a href="#accueil">Accueil</a></li>
+                        <li><a href="#produits">Produits</a></li>
+                        <li><a href="#a-propos">À propos</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Paiements acceptés</h3>
+                    <div class="payment-methods">
+                        <i class="fas fa-money-bill-wave"></i>
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 BDS BUSINESS. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bouton panier flottant -->
+    <div class="cart-floating" onclick="window.location.href='cart.html'">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count-floating">0</span>
+    </div>
+    <script src="js/api.js"></script>
+    <script src="js/account.js"></script>
+    <script src="js/main.js"></script>
+    <script src="js/hero.js"></script>
+</body>
+</html>

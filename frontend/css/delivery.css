@@ -1,0 +1,39 @@
+/* Styles pour la section WhatsApp */
+.whatsapp-section {
+  display: none;
+  text-align: center;
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 2px solid #25D366;
+}
+
+.btn-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  padding: 1rem 2rem;
+  background: #25D366;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  transition: all 0.3s;
+}
+
+.btn-whatsapp:hover {
+  background: #128C7E;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+}
+
+.whatsapp-section i {
+  margin-right: 0.5rem;
+}
+
+.whatsapp-note {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: #666;
+}

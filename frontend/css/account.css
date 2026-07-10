@@ -1,0 +1,173 @@
+/* account.css */
+.user-menu {
+    position: absolute;
+    top: 60px;
+    right: 20px;
+    width: 300px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    z-index: 1000;
+    display: none;
+    overflow: hidden;
+}
+
+.user-menu.active {
+    display: block;
+    animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+    from { 
+        opacity: 0; 
+        transform: translateY(-10px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translateY(0); 
+    }
+}
+
+.user-menu-header {
+    padding: 15px;
+    background: #f8f9fa;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+}
+
+.user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+}
+
+.user-avatar i {
+    color: #6c757d;
+    font-size: 18px;
+}
+
+.user-info {
+    flex: 1;
+}
+
+.user-info span {
+    display: block;
+    line-height: 1.4;
+}
+
+.user-email {
+    font-size: 13px;
+    color: #6c757d;
+}
+
+.user-menu-links {
+    padding: 8px 0;
+}
+
+.user-menu-links a {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.user-menu-links a:hover {
+    background: #f8f9fa;
+    color: #0066cc;
+}
+
+.user-menu-links i {
+    width: 24px;
+    margin-right: 12px;
+    text-align: center;
+    color: #6c757d;
+}
+
+.menu-divider {
+    height: 1px;
+    background: #eee;
+    margin: 8px 0;
+}
+
+/* Pour le bouton du compte dans le header */
+.header-actions .account {
+    position: relative;
+}
+
+/* Masquer les éléments par défaut */
+.hidden {
+    display: none !important;
+}
+
+/* Media queries pour responsivité */
+@media (max-width: 768px) {
+    .user-menu {
+        width: 90vw;
+        max-width: 280px;
+        right: 10px;
+    }
+    
+    .user-menu-header {
+        padding: 12px;
+    }
+    
+    .user-avatar {
+        width: 35px;
+        height: 35px;
+        margin-right: 10px;
+    }
+    
+    .user-avatar i {
+        font-size: 16px;
+    }
+}
+
+@media (max-width: 576px) {
+    .user-menu {
+        width: 95vw;
+        max-width: 250px;
+    }
+    
+    .user-menu-links a {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+    
+    .user-menu-links i {
+        width: 20px;
+        margin-right: 10px;
+        font-size: 16px;
+    }
+    
+    .user-avatar {
+        width: 32px;
+        height: 32px;
+    }
+}
+
+/* FTD */
+@media (max-width: 768px) {
+    .user-menu {
+        max-width: 280px;
+    }
+}
+
+@media (max-width: 576px) {
+    .user-menu {
+        width: 90vw;
+        max-width: 250px;
+    }
+    
+    .user-menu-links a {
+        padding: 8px 15px;
+        font-size: 14px;
+    }
+}

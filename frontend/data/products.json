@@ -1,0 +1,76 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Abaya classique noire brodée or",
+      "category": "Abayas",
+      "price": 34900,
+      "oldPrice": 39900,
+      "discount": 13,
+      "rating": 4.7,
+      "reviews": 42,
+      "images": ["images/products/abayas/abaya1.jpg"],
+      "sizes": ["S", "M", "L", "XL"],
+      "colors": ["Noir", "Bleu nuit", "Bordeaux"],
+      "description": "Abaya élégante en crêpe de qualité supérieure avec broderies dorées traditionnelles.",
+      "stock": 15,
+      "seller": "BDS FASHION",
+      "shipping": "Livraison gratuite"
+    },
+    {
+      "id": 2,
+      "name": "Costume homme classique bleu marine", 
+      "category": "Vêtements Homme",
+      "price": 49900,
+      "oldPrice": 59900,
+      "discount": 17,
+      "rating": 4.8,
+      "reviews": 56,
+      "images": ["images/products/men/costume1.jpg"],
+      "sizes": ["M", "L", "XL", "XXL"],
+      "colors": ["Bleu marine", "Noir", "Anthracite"],
+      "description": "Costume 3 pièces en laine peignée. Veste ajustée, pantalon droit, gilet assorti.",
+      "stock": 8,
+      "seller": "BDS FASHION",
+      "shipping": "Livraison gratuite"
+    },
+    {
+      "id": 3,
+      "name": "Ordinateur portable HP 15s",
+      "category": "Ordinateurs", 
+      "price": 549900,
+      "oldPrice": 599900,
+      "discount": 8,
+      "rating": 4.7,
+      "reviews": 132,
+      "images": ["images/products/computers/hp-laptop.jpg"],
+      "specs": {
+        "processeur": "Intel Core i5 11e gén",
+        "ram": "8 Go", 
+        "stockage": "512 Go SSD",
+        "écran": "15.6\" FHD"
+      },
+      "stock": 5,
+      "seller": "BDS TECH",
+      "shipping": "Livraison gratuite",
+      "warranty": "2 ans"
+    },
+    {
+      "id": 4,
+      "name": "Montre connectée Huawei Watch GT 3",
+      "category": "Montres",
+      "price": 129900, 
+      "oldPrice": 149900,
+      "discount": 13,
+      "rating": 4.6,
+      "reviews": 89,
+      "images": ["images/products/watches/watch1.jpg"],
+      "colors": ["Noir", "Argent", "Or"],
+      "description": "Montre connectée avec écran AMOLED 1.43\", suivi d'activité, moniteur de fréquence cardiaque.",
+      "stock": 12,
+      "seller": "BDS TECH", 
+      "shipping": "Livraison gratuite",
+      "warranty": "1 an"
+    }
+  ]
+}

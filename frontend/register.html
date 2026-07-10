@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inscription - BDS BUSINESS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .register-container {
+            max-width: 500px;
+            width: 100%;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+            padding: 40px;
+            margin: 20px auto;
+        }
+        .register-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .register-header h2 {
+            color: #0056b3;
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .register-header p {
+            color: #666;
+            font-size: 14px;
+        }
+        .logo-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .logo-section img {
+            height: 60px;
+            margin-bottom: 10px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+            font-size: 14px;
+        }
+        .form-group label .required {
+            color: #f44336;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #0056b3;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        .error-message {
+            color: #f44336;
+            background: #ffebee;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+        }
+        .error-message i {
+            margin-right: 8px;
+        }
+        .success-message {
+            color: #4CAF50;
+            background: #e8f5e9;
+            padding: 12px 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+            font-size: 14px;
+        }
+        .btn-register {
+            width: 100%;
+            padding: 14px;
+            background: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .btn-register:hover {
+            background: #003d82;
+        }
+        .btn-register:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 14px;
+        }
+        .login-link a {
+            color: #0056b3;
+            text-decoration: none;
+            font-weight: 600;
+        }
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+        .password-hint {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .loading-spinner i {
+            font-size: 24px;
+            color: #0056b3;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @media (max-width: 600px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            .register-container {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <div class="logo-section">
+            <a href="index.html">
+                <img src="images/logo-bdsbusiness.png" alt="BDS BUSINESS Logo" onerror="this.style.display='none'">
+            </a>
+        </div>
+        
+        <div class="register-header">
+            <h2>Créer un compte</h2>
+            <p>Rejoignez BDS BUSINESS et profitez de nos offres exclusives</p>
+        </div>
+
+        <div class="error-message" id="errorMessage">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorText"></span>
+        </div>
+
+        <div class="success-message" id="successMessage">
+            <i class="fas fa-check-circle"></i>
+            <span id="successText"></span>
+        </div>
+
+        <div class="loading-spinner" id="loadingSpinner">
+            <i class="fas fa-spinner"></i>
+        </div>
+
+        <form id="registerForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstname">Prénom <span class="required">*</span></label>
+                    <input type="text" id="firstname" name="firstname" required placeholder="Votre prénom">
+                </div>
+                <div class="form-group">
+                    <label for="lastname">Nom <span class="required">*</span></label>
+                    <input type="text" id="lastname" name="lastname" required placeholder="Votre nom">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email <span class="required">*</span></label>
+                <input type="email" id="email" name="email" required placeholder="exemple@email.com">
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Téléphone <span class="required">*</span></label>
+                <input type="tel" id="phone" name="phone" required placeholder="+221771234567">
+                <p class="password-hint">Format: +221XXXXXXXXX (indicatif + numéro)</p>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mot de passe <span class="required">*</span></label>
+                <input type="password" id="password" name="password" required placeholder="Minimum 6 caractères">
+                <p class="password-hint">Doit contenir au moins 6 caractères, une majuscule, une minuscule et un chiffre</p>
+            </div>
+
+            <div class="form-group">
+                <label for="confirmPassword">Confirmer le mot de passe <span class="required">*</span></label>
+                <input type="password" id="confirmPassword" name="confirmPassword" required placeholder="Répétez le mot de passe">
+            </div>
+
+            <button type="submit" class="btn-register" id="submitBtn">
+                <i class="fas fa-user-plus"></i> S'inscrire
+            </button>
+        </form>
+
+        <p class="login-link">
+            Vous avez déjà un compte ? 
+            <a href="login.html">Se connecter</a>
+        </p>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        const form = document.getElementById('registerForm');
+        const errorDiv = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const successDiv = document.getElementById('successMessage');
+        const successText = document.getElementById('successText');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const submitBtn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Masquer les messages précédents
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            
+            // Récupérer les valeurs du formulaire
+            const formData = {
+                firstname: document.getElementById('firstname').value.trim(),
+                lastname: document.getElementById('lastname').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                password: document.getElementById('password').value,
+            };
+            
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // Validation côté client
+            if (formData.password !== confirmPassword) {
+                showError('Les mots de passe ne correspondent pas');
+                return;
+            }
+            
+            if (formData.password.length < 6) {
+                showError('Le mot de passe doit contenir au moins 6 caractères');
+                return;
+            }
+            
+            // Validation du téléphone (format Sénégalais)
+            if (!formData.phone.match(/^\+221[0-9]{9}$/)) {
+                showError('Format téléphone invalide. Utilisez le format: +221XXXXXXXXX');
+                return;
+            }
+            
+            // Désactiver le bouton et afficher le spinner
+            submitBtn.disabled = true;
+            loadingSpinner.style.display = 'block';
+            
+            try {
+                // Appel à l'API d'inscription
+                const response = await Auth.register(formData);
+                
+                // Succès !
+                showSuccess('Inscription réussie ! Redirection vers la page de connexion...');
+                form.reset();
+                
+                // Redirection après 2 secondes
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
+                
+            } catch (error) {
+                // Gestion des erreurs
+                if (error.response && error.response.data) {
+                    const errorData = error.response.data;
+                    
+                    // Si plusieurs erreurs de validation
+                    if (errorData.errors && Array.isArray(errorData.errors)) {
+                        const firstError = errorData.errors[0];
+                        showError(firstError.message || firstError.msg);
+                    } else {
+                        showError(errorData.message || 'Erreur lors de l\'inscription');
+                    }
+                } else {
+                    showError(error.message || 'Erreur de connexion au serveur');
+                }
+            } finally {
+                // Réactiver le bouton et masquer le spinner
+                submitBtn.disabled = false;
+                loadingSpinner.style.display = 'none';
+            }
+        });
+        
+        function showError(message) {
+            errorText.textContent = message;
+            errorDiv.style.display = 'block';
+            successDiv.style.display = 'none';
+            
+            // Scroll vers le haut pour voir le message
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function showSuccess(message) {
+            successText.textContent = message;
+            successDiv.style.display = 'block';
+            errorDiv.style.display = 'none';
+            
+            // Scroll vers le haut pour voir le message
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        // Validation en temps réel du format téléphone
+        document.getElementById('phone').addEventListener('input', (e) => {
+            const phone = e.target.value;
+            if (phone && !phone.startsWith('+221')) {
+                e.target.style.borderColor = '#ff9800';
+            } else if (phone.match(/^\+221[0-9]{9}$/)) {
+                e.target.style.borderColor = '#4CAF50';
+            } else {
+                e.target.style.borderColor = '#e0e0e0';
+            }
+        });
+        
+        // Validation en temps réel de la correspondance des mots de passe
+        document.getElementById('confirmPassword').addEventListener('input', (e) => {
+            const password = document.getElementById('password').value;
+            const confirmPassword = e.target.value;
+            
+            if (confirmPassword && password !== confirmPassword) {
+                e.target.style.borderColor = '#f44336';
+            } else if (confirmPassword && password === confirmPassword) {
+                e.target.style.borderColor = '#4CAF50';
+            } else {
+                e.target.style.borderColor = '#e0e0e0';
+            }
+        });
+    </script>
+</body>
+</html>

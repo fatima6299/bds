@@ -1,0 +1,137 @@
+<!-- confirmation.html -->
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Confirmation - BDS BUSINESS</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">    <link rel="stylesheet" href="css/responsive.css">  <link rel="stylesheet" href="css/confirmation.css">
+</head>
+<body>
+  <!-- Header (identique aux autres pages) -->
+  <header class="header">
+    <!-- ... contenu du header existant ... -->
+  </header>
+
+  <div class="container">
+    <div class="checkout-steps">
+      <div class="step completed">
+        <span class="step-number"><i class="fas fa-check"></i></span>
+        <span class="step-text">Livraison</span>
+      </div>
+      <div class="step completed">
+        <span class="step-number"><i class="fas fa-check"></i></span>
+        <span class="step-text">Paiement</span>
+      </div>
+      <div class="step active">
+        <span class="step-number">3</span>
+        <span class="step-text">Confirmation</span>
+      </div>
+    </div>
+
+    <div class="confirmation-container">
+      <div class="confirmation-card">
+        <div class="confirmation-header">
+          <i class="fas fa-check-circle"></i>
+          <h1>Commande confirmée !</h1>
+          <p class="order-number">Référence : <span id="orderReference"></span></p>
+        </div>
+
+        <div class="confirmation-details">
+          <div class="detail-box">
+            <i class="fas fa-envelope"></i>
+            <h3>Email de confirmation envoyé</h3>
+            <p>Nous avons envoyé un email de confirmation à votre adresse email avec les détails de votre commande.</p>
+          </div>
+
+          <div class="detail-box">
+            <i class="fas fa-truck"></i>
+            <h3>Suivi de commande</h3>
+            <p>Vous pouvez suivre l'état de votre commande dans votre <a href="orders.html">espace client</a>.</p>
+          </div>
+
+          <div class="detail-box">
+            <i class="fas fa-phone"></i>
+            <h3>Besoin d'aide ?</h3>
+            <p>Notre équipe est à votre disposition au <strong>33 123 45 67</strong> ou par email à <strong>contact@bdsbusiness.com</strong></p>
+          </div>
+        </div>
+
+        <div class="order-summary">
+          <h3><i class="fas fa-receipt"></i> Récapitulatif de la commande</h3>
+          <div id="orderSummary">
+            <!-- Les détails de la commande seront ajoutés dynamiquement -->
+          </div>
+        </div>
+
+        <div class="confirmation-actions">
+          <a href="index.html" class="btn-secondary">
+            <i class="fas fa-home"></i> Retour à l'accueil
+          </a>
+          <a href="orders.html" class="btn-primary">
+            <i class="fas fa-box"></i> Voir mes commandes
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Récupérer les données de la commande
+    const paymentData = JSON.parse(localStorage.getItem('paymentData') || '{}');
+    
+    // Afficher la référence de commande
+    if (paymentData.reference) {
+      document.getElementById('orderReference').textContent = paymentData.reference;
+    }
+
+    // Afficher le récapitulatif de la commande
+    const orderSummary = document.getElementById('orderSummary');
+    if (paymentData.items && paymentData.items.length > 0) {
+      let summaryHTML = '';
+      
+      // Ajouter les articles
+      paymentData.items.forEach(item => {
+        summaryHTML += `
+          <div class="order-item">
+            <div class="item-name">${item.name} x${item.quantity}</div>
+            <div class="item-price">${formatPrice(item.price * item.quantity)} FCFA</div>
+          </div>
+        `;
+      });
+
+      // Ajouter le total
+      summaryHTML += `
+        <div class="order-total">
+          <span>Total</span>
+          <span>${formatPrice(paymentData.amount)} FCFA</span>
+        </div>
+      `;
+
+      // Ajouter l'adresse de livraison
+      if (paymentData.deliveryInfo) {
+        const d = paymentData.deliveryInfo;
+        summaryHTML += `
+          <div class="delivery-info">
+            <h4><i class="fas fa-truck"></i> Adresse de livraison</h4>
+            <p><strong>${d.fullName}</strong></p>
+            <p>${d.address}</p>
+            <p>${d.city}</p>
+            <p>Tél: ${d.phone}</p>
+          </div>
+        `;
+      }
+
+      orderSummary.innerHTML = summaryHTML;
+    }
+
+    function formatPrice(price) {
+      return parseFloat(price || 0).toLocaleString('fr-FR');
+    }
+
+    // Vider le panier après confirmation
+    localStorage.removeItem('cartItems');
+  </script>
+</body>
+</html>

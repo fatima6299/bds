@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Abayas - BDS BUSINESS</title>
+    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .category-banner {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 60px 0;
+            text-align: center;
+        }
+        .category-banner h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+        }
+        .category-banner p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+        .products {
+            padding: 40px 0;
+        }
+        .product-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .product-count {
+            font-size: 16px;
+            color: #666;
+        }
+        .product-count strong {
+            color: #0056b3;
+            font-size: 20px;
+        }
+        .filter-sort {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .filter-group label {
+            font-weight: 500;
+            color: #333;
+        }
+        .filter-group select,
+        .filter-group input[type="range"] {
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .filter-group input[type="range"] {
+            width: 150px;
+        }
+        .price-value {
+            font-weight: 600;
+            color: #0056b3;
+            min-width: 100px;
+        }
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        .loading-container, .error-container, .no-products {
+            text-align: center;
+            padding: 80px 20px;
+            grid-column: 1 / -1;
+        }
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #0056b3;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .no-products i,
+        .error-container i {
+            font-size: 60px;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        .btn-retry {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .btn-retry:hover {
+            background: #003d82;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            margin-top: 40px;
+        }
+        .pagination button {
+            padding: 10px 20px;
+            border: 1px solid #ddd;
+            background: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        .pagination button:hover:not(:disabled) {
+            background: #0056b3;
+            color: white;
+            border-color: #0056b3;
+        }
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .page-numbers {
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- En-tête -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="../index.html">
+                    <img src="../images/logo-bdsbusiness.png" alt="BDS BUSINESS Logo" class="logo-img">
+                    <span class="logo-text">BDS BUSINESS</span>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="../index.html">Accueil</a></li>
+                    <li><a href="abayas.html" class="active">Abayas</a></li>
+                    <li><a href="vetements-homme.html">Vêtements Homme</a></li>
+                    <li><a href="ordinateurs.html">Ordinateurs</a></li>
+                    <li><a href="montres.html">Montres</a></li>
+                    <li><a href="../contact.html">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <a href="../login.html" class="account" title="Mon compte"><i class="fas fa-user"></i></a>
+                <a href="../cart.html" class="cart" title="Panier">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Bannière de catégorie -->
+    <section class="category-banner">
+        <div class="container">
+            <h1>Collection Abayas</h1>
+            <p>Découvrez notre collection exclusive d'abayas élégantes et raffinées</p>
+        </div>
+    </section>
+
+    <!-- Contrôles et filtres -->
+    <section class="products">
+        <div class="container">
+            <div class="product-controls">
+                <div class="product-count">
+                    <strong><span id="productCount">0</span></strong> abayas disponibles
+                </div>
+                <div class="filter-sort">
+                    <div class="filter-group">
+                        <label for="sortBy">Trier par :</label>
+                        <select id="sortBy">
+                            <option value="featured">En vedette</option>
+                            <option value="price_asc">Prix croissant</option>
+                            <option value="price_desc">Prix décroissant</option>
+                            <option value="rating">Mieux notés</option>
+                            <option value="name">Nom (A-Z)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <label for="priceRange">Prix max :</label>
+                        <input type="range" id="priceRange" min="0" max="500000" step="5000" value="500000">
+                        <span class="price-value" id="maxPrice">500 000 FCFA</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grille de produits -->
+            <div class="product-grid" id="categoryProductGrid">
+                <!-- Les produits seront chargés ici par JavaScript -->
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination">
+                <button class="prev-page"><i class="fas fa-chevron-left"></i> Précédent</button>
+                <div class="page-numbers">
+                    <span class="current-page">1</span>
+                    <span>sur</span>
+                    <span class="total-pages">1</span>
+                </div>
+                <button class="next-page">Suivant <i class="fas fa-chevron-right"></i></button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pied de page -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>BDS BUSINESS</h3>
+                    <p>Votre partenaire de confiance pour tous vos achats en ligne.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Liens rapides</h3>
+                    <ul>
+                        <li><a href="../index.html">Accueil</a></li>
+                        <li><a href="abayas.html">Abayas</a></li>
+                        <li><a href="vetements-homme.html">Vêtements Homme</a></li>
+                        <li><a href="ordinateurs.html">Ordinateurs</a></li>
+                        <li><a href="montres.html">Montres</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>Paiements acceptés</h3>
+                    <div class="payment-methods">
+                        <i class="fas fa-money-bill-wave" title="Wave"></i>
+                        <i class="fas fa-mobile-alt" title="Orange Money"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 BDS BUSINESS. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+     <!-- Bouton panier flottant -->
+    <div class="cart-floating" onclick="window.location.href='cart.html'">
+        <i class="fas fa-shopping-cart"></i>
+        <span class="cart-count-floating">0</span>
+    </div>
+    <!-- Scripts -->
+    <script src="../js/api.js"></script>
+    <script src="../js/category.js"></script>
+    <script>
+        // Initialiser la page avec la catégorie "Abayas"
+        document.addEventListener('DOMContentLoaded', () => {
+            new CategoryPage('Abayas');
+        });
+    </script>
+</body>
+</html>

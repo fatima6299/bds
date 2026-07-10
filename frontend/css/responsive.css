@@ -366,8 +366,9 @@
     }
 
     .category-icon {
-        width: 100% !important;
-        height: 150px !important;
+        width: min(120px, 100%) !important;
+        height: auto !important;
+        aspect-ratio: 1 / 1 !important;
     }
 
     .category-card h3 {

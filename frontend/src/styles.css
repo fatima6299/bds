@@ -746,11 +746,13 @@ body {
   overflow: hidden;
   cursor: pointer;
   background: white;
+  transition: border-color 0.2s ease, transform 0.2s ease;
 }
 
 .thumbnail-btn.active,
 .thumbnail-btn:hover {
   border-color: var(--primary-color);
+  transform: translateY(-2px);
 }
 
 .product-detail-info {

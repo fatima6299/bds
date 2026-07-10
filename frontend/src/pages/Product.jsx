@@ -68,9 +68,11 @@ export default function Product() {
   }, [id]);
 
   const galleryImages = useMemo(() => {
-    if (!product) return ['images/products/computers/im3.jpeg'];
+    if (!product) return ['images/products/computers/im3.jpeg', 'images/products/computers/im2.jpeg', 'images/products/computers/im.jpeg'];
     const images = [product.image_url, product.image_url_2, product.image_url_3].filter(Boolean);
-    return images.length > 0 ? images : ['images/products/computers/im3.jpeg'];
+    return images.length > 0
+      ? [...images, 'images/products/computers/im3.jpeg', 'images/products/computers/im2.jpeg', 'images/products/computers/im.jpeg']
+      : ['images/products/computers/im3.jpeg', 'images/products/computers/im2.jpeg', 'images/products/computers/im.jpeg'];
   }, [product]);
 
   if (loading) {

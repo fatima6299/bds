@@ -43,6 +43,17 @@ export default function Header() {
           </Link>
         </div>
 
+        <nav className="main-nav">
+          <ul>
+            <li><Link to="/">Accueil</Link></li>
+            <li><Link to="/category/abayas">Abayas</Link></li>
+            <li><Link to="/category/vetements-homme">Vêtements Homme</Link></li>
+            <li><Link to="/category/ordinateurs">Ordinateurs</Link></li>
+            <li><Link to="/category/montres">Montres</Link></li>
+            <li><Link to="/contact">Contact</Link></li>
+          </ul>
+        </nav>
+
         <form
           className="search-bar"
           onSubmit={(event) => {

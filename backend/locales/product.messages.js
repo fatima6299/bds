@@ -1,5 +1,5 @@
 /**
- * Author: Saliou Samba DIAO
+ * Author: Fatimata Tidiane Dia
  * Created: December 1, 2025
  * Description: Product messages - success and error messages for product operations
  */

@@ -1,5 +1,5 @@
 /**
- * Author: Saliou Samba DIAO
+ * Author: Fatimata Tidiane Dia
  * Created: December 1, 2025
  * Description: Main server file for BDS E-commerce API
  */

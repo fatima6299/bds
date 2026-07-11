@@ -11,10 +11,24 @@ module.exports = {
   createProduct: `
     INSERT INTO products (
       name, description, category, price, discount_percent, stock,
-      image_url, image_url_2, image_url_3, gender
+      image_url, gender
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `,
+
+  // Galerie d'images additionnelles (product_images)
+  insertProductImage: `
+    INSERT INTO product_images (product_id, image_url, position)
+    VALUES (?, ?, ?)
+  `,
+
+  findImagesByProductId: `
+    SELECT image_url FROM product_images
+    WHERE product_id = ?
+    ORDER BY position ASC
+  `,
+
+  deleteImagesByProductId: `DELETE FROM product_images WHERE product_id = ?`,
 
   // Lecture
   findById: `SELECT * FROM products WHERE id = ?`,
@@ -56,10 +70,9 @@ module.exports = {
 
   // Mise à jour
   updateProduct: `
-    UPDATE products 
-    SET name = ?, description = ?, category = ?, price = ?, 
-        discount_percent = ?, stock = ?, image_url = ?,
-        image_url_2 = ?, image_url_3 = ?, gender = ?
+    UPDATE products
+    SET name = ?, description = ?, category = ?, price = ?,
+        discount_percent = ?, stock = ?, image_url = ?, gender = ?
     WHERE id = ?
   `,
   

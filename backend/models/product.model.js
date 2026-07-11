@@ -10,31 +10,45 @@ const queries = require('../queries').product;
 class Product {
   // Créer un nouveau produit
   static async create(productData) {
-    const { 
-      name, 
-      description, 
-      category, 
-      price, 
-      discount_percent = 0, 
-      stock = 0, 
-      image_url = null, 
-      image_url_2 = null,
-      image_url_3 = null,
-      gender = 'unisex' 
+    const {
+      name,
+      description,
+      category,
+      price,
+      discount_percent = 0,
+      stock = 0,
+      image_url = null,
+      images = [],
+      gender = 'unisex'
     } = productData;
-    
+
     const [result] = await db.query(queries.createProduct, [
       name, description, category, price, discount_percent, stock,
-      image_url, image_url_2, image_url_3, gender
+      image_url, gender
     ]);
-    
+
+    await this.setGalleryImages(result.insertId, images);
+
     return result.insertId;
   }
 
-  // Trouver un produit par ID
+  // Remplacer la galerie d'images additionnelles d'un produit
+  static async setGalleryImages(productId, images = []) {
+    await db.query(queries.deleteImagesByProductId, [productId]);
+    for (let i = 0; i < images.length; i++) {
+      await db.query(queries.insertProductImage, [productId, images[i], i]);
+    }
+  }
+
+  // Trouver un produit par ID (avec sa galerie d'images additionnelles)
   static async findById(id) {
     const [rows] = await db.query(queries.findById, [id]);
-    return rows[0];
+    const product = rows[0];
+    if (!product) return product;
+
+    const [imageRows] = await db.query(queries.findImagesByProductId, [id]);
+    product.images = imageRows.map(row => row.image_url);
+    return product;
   }
 
   // Récupérer tous les produits
@@ -76,24 +90,25 @@ class Product {
 
   // Mettre à jour un produit
   static async update(id, productData) {
-    const { 
-      name, 
-      description, 
-      category, 
-      price, 
-      discount_percent, 
-      stock, 
+    const {
+      name,
+      description,
+      category,
+      price,
+      discount_percent,
+      stock,
       image_url,
-      image_url_2,
-      image_url_3,
-      gender 
+      images = [],
+      gender
     } = productData;
-    
+
     await db.query(queries.updateProduct, [
       name, description, category, price, discount_percent, stock,
-      image_url, image_url_2, image_url_3, gender, id
+      image_url, gender, id
     ]);
-    
+
+    await this.setGalleryImages(id, images);
+
     return this.findById(id);
   }
 
@@ -123,6 +138,8 @@ class Product {
 
   // Supprimer un produit
   static async delete(id) {
+    // La table product_images est en MyISAM (pas de ON DELETE CASCADE effectif)
+    await db.query(queries.deleteImagesByProductId, [id]);
     const [result] = await db.query(queries.deleteProduct, [id]);
     return result.affectedRows > 0;
   }

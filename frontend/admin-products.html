@@ -64,12 +64,16 @@
             resize: vertical;
             min-height: 90px;
         }
-        .image-inputs {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+        .cover-image-input {
+            max-width: 220px;
         }
-        .image-input-group {
+        .gallery-inputs {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+        .gallery-slot {
             text-align: center;
         }
         .image-preview {
@@ -112,6 +116,32 @@
         }
         .remove-image-btn:hover {
             background: #f44336;
+        }
+        .remove-gallery-btn {
+            width: 100%;
+            padding: 6px;
+            background: #f5f5f5;
+            border: none;
+            border-radius: 4px;
+            color: #c0392b;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .remove-gallery-btn:hover {
+            background: #ffebee;
+        }
+        .btn-add-image {
+            padding: 10px 18px;
+            background: white;
+            border: 2px dashed #0056b3;
+            color: #0056b3;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        .btn-add-image:hover {
+            background: #eef4ff;
         }
         .form-actions {
             display: flex;
@@ -236,8 +266,7 @@
             background: #003d82;
         }
         @media (max-width: 600px) {
-            .form-row,
-            .image-inputs {
+            .form-row {
                 grid-template-columns: 1fr;
             }
         }
@@ -299,9 +328,11 @@
         const apiClient = new BDSApiClient();
         const adminContent = document.getElementById('adminContent');
         const CATEGORIES = ['Abayas', 'Vêtements Homme', 'Ordinateurs', 'Montres'];
+        const IMAGE_ACCEPT = 'image/jpeg,image/png,image/webp,image/gif';
 
         let editingProductId = null;
-        let currentImageUrls = [null, null, null];
+        let currentCoverUrl = null;
+        let gallerySlotCounter = 0;
 
         document.addEventListener('DOMContentLoaded', () => {
             if (!apiClient.isAuthenticated() || !apiClient.isAdmin()) {
@@ -344,9 +375,8 @@
 
         function renderForm(product = null) {
             editingProductId = product ? product.id : null;
-            currentImageUrls = product
-                ? [product.image_url || null, product.image_url_2 || null, product.image_url_3 || null]
-                : [null, null, null];
+            currentCoverUrl = product ? (product.image_url || null) : null;
+            gallerySlotCounter = 0;
 
             const formContainer = document.getElementById('formContainer');
             formContainer.innerHTML = `
@@ -391,15 +421,18 @@
                         <input type="number" id="stock" min="0" step="1" value="${product ? product.stock : 0}">
                     </div>
                     <div class="form-group">
-                        <label>Images (3 maximum)</label>
-                        <div class="image-inputs">
-                            ${[1, 2, 3].map(n => `
-                                <div class="image-input-group">
-                                    <div class="image-preview" id="preview${n}">${previewContent(n)}</div>
-                                    <input type="file" id="image${n}" accept="image/jpeg,image/png,image/webp,image/gif">
-                                </div>
-                            `).join('')}
+                        <label>Image principale</label>
+                        <div class="cover-image-input">
+                            <div class="image-preview" id="coverPreview">${coverPreviewContent()}</div>
+                            <input type="file" id="coverImage" accept="${IMAGE_ACCEPT}">
                         </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Galerie d'images additionnelles (autant que vous voulez)</label>
+                        <div class="gallery-inputs" id="galleryInputs"></div>
+                        <button type="button" class="btn-add-image" id="addGalleryImageBtn">
+                            <i class="fas fa-plus"></i> Ajouter une image
+                        </button>
                     </div>
                     <div class="form-actions">
                         <button type="submit" class="btn-submit" id="submitBtn">
@@ -410,22 +443,29 @@
                 </form>
             `;
 
-            [1, 2, 3].forEach(n => {
-                document.getElementById(`image${n}`).addEventListener('change', (e) => {
-                    const file = e.target.files[0];
-                    if (file) {
-                        document.getElementById(`preview${n}`).innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Aperçu ${n}">`;
-                    }
-                });
+            document.getElementById('coverImage').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    document.getElementById('coverPreview').innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Aperçu">`;
+                }
             });
 
-            document.querySelectorAll('.remove-image-btn').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const n = parseInt(btn.dataset.slot, 10);
-                    currentImageUrls[n - 1] = null;
-                    document.getElementById(`image${n}`).value = '';
-                    document.getElementById(`preview${n}`).innerHTML = '<i class="fas fa-image"></i>';
+            const removeCoverBtn = document.getElementById('removeCoverBtn');
+            if (removeCoverBtn) {
+                removeCoverBtn.addEventListener('click', () => {
+                    currentCoverUrl = null;
+                    document.getElementById('coverImage').value = '';
+                    document.getElementById('coverPreview').innerHTML = '<i class="fas fa-image"></i>';
                 });
+            }
+
+            const galleryContainer = document.getElementById('galleryInputs');
+            (product && product.images ? product.images : []).forEach(url => {
+                galleryContainer.appendChild(createGallerySlot(url));
+            });
+
+            document.getElementById('addGalleryImageBtn').addEventListener('click', () => {
+                galleryContainer.appendChild(createGallerySlot());
             });
 
             if (product) {
@@ -435,12 +475,37 @@
             document.getElementById('productForm').addEventListener('submit', handleSubmit);
         }
 
-        function previewContent(n) {
-            const url = currentImageUrls[n - 1];
-            if (url) {
-                return `<img src="${url}" alt="Image ${n}"><button type="button" class="remove-image-btn" data-slot="${n}" title="Retirer l'image"><i class="fas fa-times"></i></button>`;
+        function coverPreviewContent() {
+            if (currentCoverUrl) {
+                return `<img src="${currentCoverUrl}" alt="Image principale"><button type="button" class="remove-image-btn" id="removeCoverBtn" title="Retirer l'image"><i class="fas fa-times"></i></button>`;
             }
             return '<i class="fas fa-image"></i>';
+        }
+
+        function createGallerySlot(existingUrl = null) {
+            const slotId = gallerySlotCounter++;
+            const wrapper = document.createElement('div');
+            wrapper.className = 'gallery-slot';
+            wrapper.dataset.slotId = String(slotId);
+            wrapper.dataset.existingUrl = existingUrl || '';
+            wrapper.innerHTML = `
+                <div class="image-preview" id="galleryPreview${slotId}">
+                    ${existingUrl ? `<img src="${existingUrl}" alt="Image">` : '<i class="fas fa-image"></i>'}
+                </div>
+                <input type="file" id="galleryFile${slotId}" accept="${IMAGE_ACCEPT}">
+                <button type="button" class="remove-gallery-btn"><i class="fas fa-trash"></i> Retirer</button>
+            `;
+
+            wrapper.querySelector('input[type="file"]').addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    wrapper.querySelector('.image-preview').innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Aperçu">`;
+                }
+            });
+
+            wrapper.querySelector('.remove-gallery-btn').addEventListener('click', () => wrapper.remove());
+
+            return wrapper;
         }
 
         function escapeHtml(str) {
@@ -476,11 +541,16 @@
                 `).join('');
 
                 listContainer.querySelectorAll('.btn-edit').forEach(btn => {
-                    btn.addEventListener('click', () => {
-                        const product = products.find(p => p.id === parseInt(btn.dataset.id, 10));
-                        if (product) {
-                            renderForm(product);
+                    btn.addEventListener('click', async () => {
+                        btn.disabled = true;
+                        try {
+                            const fullProduct = await apiClient.getProduct(btn.dataset.id);
+                            renderForm(fullProduct.product);
                             document.getElementById('formContainer').scrollIntoView({ behavior: 'smooth' });
+                        } catch (error) {
+                            alert(error.message || 'Erreur lors du chargement du produit');
+                        } finally {
+                            btn.disabled = false;
                         }
                     });
                 });
@@ -502,13 +572,23 @@
             submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${isEditing ? 'Mise à jour en cours...' : 'Publication en cours...'}`;
 
             try {
-                const imageUrls = [...currentImageUrls];
+                let coverUrl = currentCoverUrl;
+                const coverFile = document.getElementById('coverImage').files[0];
+                if (coverFile) {
+                    const result = await apiClient.uploadImage(coverFile);
+                    coverUrl = result.url;
+                }
 
-                for (let i = 0; i < 3; i++) {
-                    const file = document.getElementById(`image${i + 1}`).files[0];
+                const galleryUrls = [];
+                const slots = document.querySelectorAll('#galleryInputs .gallery-slot');
+                for (const slot of slots) {
+                    const slotId = slot.dataset.slotId;
+                    const file = document.getElementById(`galleryFile${slotId}`).files[0];
                     if (file) {
                         const result = await apiClient.uploadImage(file);
-                        imageUrls[i] = result.url;
+                        galleryUrls.push(result.url);
+                    } else if (slot.dataset.existingUrl) {
+                        galleryUrls.push(slot.dataset.existingUrl);
                     }
                 }
 
@@ -520,9 +600,8 @@
                     price: parseFloat(document.getElementById('price').value),
                     discount_percent: parseFloat(document.getElementById('discount_percent').value) || 0,
                     stock: parseInt(document.getElementById('stock').value) || 0,
-                    image_url: imageUrls[0],
-                    image_url_2: imageUrls[1],
-                    image_url_3: imageUrls[2]
+                    image_url: coverUrl,
+                    images: galleryUrls
                 };
 
                 if (isEditing) {

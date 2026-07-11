@@ -28,6 +28,7 @@ module.exports = {
     discountInvalid: 'La réduction doit être entre 0 et 100',
     categoryInvalid: 'Catégorie invalide',
     genderInvalid: 'Genre invalide (male, female, unisex)',
+    imagesInvalid: 'La galerie d\'images doit être une liste d\'URLs',
     
     // Console logs
     logCreateError: 'Erreur lors de la création du produit:',

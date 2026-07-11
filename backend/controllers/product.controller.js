@@ -10,7 +10,7 @@ const { product } = require('../locales');
 // Créer un nouveau produit (Admin/SuperAdmin)
 exports.createProduct = async (req, res) => {
   try {
-    const { name, description, category, price, discount_percent, stock, image_url, image_url_2, image_url_3, gender } = req.body;
+    const { name, description, category, price, discount_percent, stock, image_url, images, gender } = req.body;
 
     const productId = await Product.create({
       name,
@@ -20,8 +20,7 @@ exports.createProduct = async (req, res) => {
       discount_percent,
       stock,
       image_url,
-      image_url_2,
-      image_url_3,
+      images,
       gender
     });
 
@@ -126,7 +125,7 @@ exports.getProductById = async (req, res) => {
 exports.updateProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, description, category, price, discount_percent, stock, image_url, image_url_2, image_url_3, gender } = req.body;
+    const { name, description, category, price, discount_percent, stock, image_url, images, gender } = req.body;
 
     // Vérifier que le produit existe
     const existingProduct = await Product.findById(id);
@@ -145,8 +144,7 @@ exports.updateProduct = async (req, res) => {
       discount_percent,
       stock,
       image_url,
-      image_url_2,
-      image_url_3,
+      images,
       gender
     });
 

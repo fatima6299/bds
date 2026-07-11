@@ -18,7 +18,8 @@ const productValidation = [
   body('price').isFloat({ min: 0 }).withMessage(product.priceInvalid),
   body('discount_percent').optional().isFloat({ min: 0, max: 100 }).withMessage(product.discountInvalid),
   body('stock').optional().isInt({ min: 0 }).withMessage(product.stockInvalid),
-  body('gender').optional().isIn(['male', 'female', 'unisex']).withMessage(product.genderInvalid)
+  body('gender').optional().isIn(['male', 'female', 'unisex']).withMessage(product.genderInvalid),
+  body('images').optional().isArray().withMessage(product.imagesInvalid)
 ];
 
 // Routes publiques (accessibles à tous)

@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des produits - BDS BUSINESS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .admin-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 12px 12px 0 0;
+            margin-bottom: 30px;
+        }
+        .admin-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .admin-form {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .admin-form h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #333;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 90px;
+        }
+        .image-inputs {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+        }
+        .image-input-group {
+            text-align: center;
+        }
+        .image-preview {
+            position: relative;
+            width: 100%;
+            height: 100px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            overflow: hidden;
+            background: #fafafa;
+        }
+        .image-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .image-preview i {
+            font-size: 24px;
+            color: #ccc;
+        }
+        .remove-image-btn {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 22px;
+            height: 22px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.6);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+        }
+        .remove-image-btn:hover {
+            background: #f44336;
+        }
+        .form-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .btn-submit {
+            flex: 1;
+            padding: 14px;
+            background: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-submit:hover {
+            background: #003d82;
+        }
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .btn-cancel {
+            padding: 14px 20px;
+            background: #f5f5f5;
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .btn-cancel:hover {
+            background: #e0e0e0;
+        }
+        .error-message,
+        .success-message {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .error-message {
+            color: #f44336;
+            background: #ffebee;
+        }
+        .success-message {
+            color: #2e7d32;
+            background: #e8f5e9;
+        }
+        .access-denied {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .access-denied i {
+            font-size: 60px;
+            color: #f44336;
+            margin-bottom: 20px;
+        }
+        .admin-list-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .admin-list-section h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .product-row {
+            display: grid;
+            grid-template-columns: 60px 1fr auto;
+            gap: 15px;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .product-row:last-child {
+            border-bottom: none;
+        }
+        .product-row-thumb {
+            width: 60px;
+            height: 60px;
+            border-radius: 6px;
+            overflow: hidden;
+            background: #fafafa;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .product-row-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .product-row-thumb i {
+            color: #ccc;
+            font-size: 20px;
+        }
+        .product-row-info .name {
+            font-weight: 600;
+            color: #333;
+        }
+        .product-row-info .meta {
+            font-size: 13px;
+            color: #777;
+        }
+        .btn-edit {
+            padding: 8px 16px;
+            background: #0056b3;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-edit:hover {
+            background: #003d82;
+        }
+        @media (max-width: 600px) {
+            .form-row,
+            .image-inputs {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- En-tête -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="/">
+                    <img src="images/logo-bdsbusiness.png" alt="BDS BUSINESS Logo" class="logo-img">
+                    <span class="logo-text">BDS BUSINESS</span>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Accueil</a></li>
+                    <li><a href="/category/abayas">Abayas</a></li>
+                    <li><a href="/category/vetements-homme">Vêtements Homme</a></li>
+                    <li><a href="/category/ordinateurs">Ordinateurs</a></li>
+                    <li><a href="/category/montres">Montres</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <a href="/profile" class="account" title="Mon compte"><i class="fas fa-user"></i></a>
+                <a href="/cart" class="cart" title="Panier">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <div id="adminContent">
+            <!-- Rempli dynamiquement selon le rôle -->
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>BDS BUSINESS</h3>
+                    <p>Votre partenaire de confiance pour tous vos achats en ligne.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 BDS BUSINESS. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/api-client.js"></script>
+    <script>
+        const apiClient = new BDSApiClient();
+        const adminContent = document.getElementById('adminContent');
+        const CATEGORIES = ['Abayas', 'Vêtements Homme', 'Ordinateurs', 'Montres'];
+
+        let editingProductId = null;
+        let currentImageUrls = [null, null, null];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!apiClient.isAuthenticated() || !apiClient.isAdmin()) {
+                renderAccessDenied();
+                return;
+            }
+            renderPage();
+        });
+
+        function renderAccessDenied() {
+            adminContent.innerHTML = `
+                <div class="access-denied">
+                    <i class="fas fa-lock"></i>
+                    <h2>Accès réservé aux administrateurs</h2>
+                    <p>Vous devez être connecté avec un compte admin pour gérer les produits.</p>
+                    <a href="/login" class="shop-now-btn">Se connecter</a>
+                </div>
+            `;
+        }
+
+        function renderPage() {
+            adminContent.innerHTML = `
+                <div class="admin-header">
+                    <h1><i class="fas fa-box"></i> Gestion des produits</h1>
+                    <p>Réservé aux administrateurs</p>
+                </div>
+                <div class="admin-form">
+                    <div class="error-message" id="errorMessage"></div>
+                    <div class="success-message" id="successMessage"></div>
+                    <div id="formContainer"></div>
+                </div>
+                <div class="admin-list-section">
+                    <h2>Produits existants</h2>
+                    <div id="productListContainer">Chargement...</div>
+                </div>
+            `;
+            renderForm();
+            loadProductList();
+        }
+
+        function renderForm(product = null) {
+            editingProductId = product ? product.id : null;
+            currentImageUrls = product
+                ? [product.image_url || null, product.image_url_2 || null, product.image_url_3 || null]
+                : [null, null, null];
+
+            const formContainer = document.getElementById('formContainer');
+            formContainer.innerHTML = `
+                <h2>${product ? 'Modifier le produit' : 'Ajouter un produit'}</h2>
+                <form id="productForm">
+                    <div class="form-group">
+                        <label for="name">Nom du produit *</label>
+                        <input type="text" id="name" required value="${product ? escapeHtml(product.name) : ''}">
+                    </div>
+                    <div class="form-group">
+                        <label for="description">Description</label>
+                        <textarea id="description">${product ? escapeHtml(product.description || '') : ''}</textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="category">Catégorie *</label>
+                            <select id="category" required>
+                                ${CATEGORIES.map(c => `<option value="${c}" ${product && product.category === c ? 'selected' : ''}>${c}</option>`).join('')}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="gender">Genre</label>
+                            <select id="gender">
+                                <option value="unisex" ${product && product.gender === 'unisex' ? 'selected' : ''}>Unisexe</option>
+                                <option value="male" ${product && product.gender === 'male' ? 'selected' : ''}>Homme</option>
+                                <option value="female" ${product && product.gender === 'female' ? 'selected' : ''}>Femme</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="price">Prix (FCFA) *</label>
+                            <input type="number" id="price" min="0" step="1" required value="${product ? product.price : ''}">
+                        </div>
+                        <div class="form-group">
+                            <label for="discount_percent">Réduction (%)</label>
+                            <input type="number" id="discount_percent" min="0" max="100" step="1" value="${product ? product.discount_percent : 0}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="stock">Stock</label>
+                        <input type="number" id="stock" min="0" step="1" value="${product ? product.stock : 0}">
+                    </div>
+                    <div class="form-group">
+                        <label>Images (3 maximum)</label>
+                        <div class="image-inputs">
+                            ${[1, 2, 3].map(n => `
+                                <div class="image-input-group">
+                                    <div class="image-preview" id="preview${n}">${previewContent(n)}</div>
+                                    <input type="file" id="image${n}" accept="image/jpeg,image/png,image/webp,image/gif">
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-submit" id="submitBtn">
+                            <i class="fas fa-upload"></i> ${product ? 'Mettre à jour le produit' : 'Publier le produit'}
+                        </button>
+                        ${product ? '<button type="button" class="btn-cancel" id="cancelEditBtn">Annuler</button>' : ''}
+                    </div>
+                </form>
+            `;
+
+            [1, 2, 3].forEach(n => {
+                document.getElementById(`image${n}`).addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        document.getElementById(`preview${n}`).innerHTML = `<img src="${URL.createObjectURL(file)}" alt="Aperçu ${n}">`;
+                    }
+                });
+            });
+
+            document.querySelectorAll('.remove-image-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const n = parseInt(btn.dataset.slot, 10);
+                    currentImageUrls[n - 1] = null;
+                    document.getElementById(`image${n}`).value = '';
+                    document.getElementById(`preview${n}`).innerHTML = '<i class="fas fa-image"></i>';
+                });
+            });
+
+            if (product) {
+                document.getElementById('cancelEditBtn').addEventListener('click', () => renderForm());
+            }
+
+            document.getElementById('productForm').addEventListener('submit', handleSubmit);
+        }
+
+        function previewContent(n) {
+            const url = currentImageUrls[n - 1];
+            if (url) {
+                return `<img src="${url}" alt="Image ${n}"><button type="button" class="remove-image-btn" data-slot="${n}" title="Retirer l'image"><i class="fas fa-times"></i></button>`;
+            }
+            return '<i class="fas fa-image"></i>';
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+
+        async function loadProductList() {
+            const listContainer = document.getElementById('productListContainer');
+            try {
+                const response = await apiClient.getProducts();
+                const products = response.products || [];
+
+                if (products.length === 0) {
+                    listContainer.innerHTML = '<p>Aucun produit pour le moment.</p>';
+                    return;
+                }
+
+                listContainer.innerHTML = products.map(p => `
+                    <div class="product-row">
+                        <div class="product-row-thumb">
+                            ${p.image_url ? `<img src="${p.image_url}" alt="${escapeHtml(p.name)}">` : '<i class="fas fa-image"></i>'}
+                        </div>
+                        <div class="product-row-info">
+                            <div class="name">${escapeHtml(p.name)}</div>
+                            <div class="meta">${escapeHtml(p.category)} · ${p.price} FCFA · Stock: ${p.stock}</div>
+                        </div>
+                        <button type="button" class="btn-edit" data-id="${p.id}">
+                            <i class="fas fa-pen"></i> Modifier
+                        </button>
+                    </div>
+                `).join('');
+
+                listContainer.querySelectorAll('.btn-edit').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        const product = products.find(p => p.id === parseInt(btn.dataset.id, 10));
+                        if (product) {
+                            renderForm(product);
+                            document.getElementById('formContainer').scrollIntoView({ behavior: 'smooth' });
+                        }
+                    });
+                });
+            } catch (error) {
+                listContainer.innerHTML = `<p>Erreur lors du chargement des produits : ${error.message}</p>`;
+            }
+        }
+
+        async function handleSubmit(e) {
+            e.preventDefault();
+            const errorDiv = document.getElementById('errorMessage');
+            const successDiv = document.getElementById('successMessage');
+            const submitBtn = document.getElementById('submitBtn');
+            const isEditing = !!editingProductId;
+
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${isEditing ? 'Mise à jour en cours...' : 'Publication en cours...'}`;
+
+            try {
+                const imageUrls = [...currentImageUrls];
+
+                for (let i = 0; i < 3; i++) {
+                    const file = document.getElementById(`image${i + 1}`).files[0];
+                    if (file) {
+                        const result = await apiClient.uploadImage(file);
+                        imageUrls[i] = result.url;
+                    }
+                }
+
+                const productData = {
+                    name: document.getElementById('name').value.trim(),
+                    description: document.getElementById('description').value.trim(),
+                    category: document.getElementById('category').value,
+                    gender: document.getElementById('gender').value,
+                    price: parseFloat(document.getElementById('price').value),
+                    discount_percent: parseFloat(document.getElementById('discount_percent').value) || 0,
+                    stock: parseInt(document.getElementById('stock').value) || 0,
+                    image_url: imageUrls[0],
+                    image_url_2: imageUrls[1],
+                    image_url_3: imageUrls[2]
+                };
+
+                if (isEditing) {
+                    await apiClient.updateProduct(editingProductId, productData);
+                    successDiv.textContent = 'Produit mis à jour avec succès !';
+                } else {
+                    await apiClient.createProduct(productData);
+                    successDiv.textContent = 'Produit publié avec succès !';
+                }
+                successDiv.style.display = 'block';
+
+                renderForm();
+                loadProductList();
+            } catch (error) {
+                errorDiv.textContent = error.message || "Erreur lors de l'enregistrement du produit";
+                errorDiv.style.display = 'block';
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = `<i class="fas fa-upload"></i> ${isEditing ? 'Mettre à jour le produit' : 'Publier le produit'}`;
+            }
+        }
+    </script>
+</body>
+</html>

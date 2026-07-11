@@ -179,6 +179,29 @@ class BDSApiClient {
     });
   }
 
+  async uploadImage(file) {
+    const formData = new FormData();
+    formData.append('image', file);
+
+    const headers = {};
+    if (this.token) {
+      headers['Authorization'] = `Bearer ${this.token}`;
+    }
+
+    const response = await fetch(`${this.baseURL}/upload/image`, {
+      method: 'POST',
+      headers,
+      body: formData,
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || `Erreur HTTP ${response.status}`);
+    }
+
+    return data;
+  }
+
   async updateProduct(id, updates) {
     return this.request(`/products/${id}`, {
       method: 'PUT',

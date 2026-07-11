@@ -11,6 +11,7 @@ const productMessages = require('./product.messages');
 const cartMessages = require('./cart.messages');
 const orderMessages = require('./order.messages');
 const commonMessages = require('./common.messages');
+const uploadMessages = require('./upload.messages');
 
 module.exports = {
   ...authMessages,
@@ -18,5 +19,6 @@ module.exports = {
   ...productMessages,
   ...cartMessages,
   ...orderMessages,
-  ...commonMessages
+  ...commonMessages,
+  ...uploadMessages
 };

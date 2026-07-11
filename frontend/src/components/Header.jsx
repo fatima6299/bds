@@ -31,6 +31,11 @@ export default function Header() {
         <div className="header-actions">
           {user ? (
             <>
+              {(user.role === 'admin' || user.role === 'superadmin') && (
+                <a href="/admin-products.html" className="account" title="Ajouter un produit">
+                  <i className="fas fa-plus-circle"></i>
+                </a>
+              )}
               <Link to="/profile" className="account" title="Mon compte">
                 <i className="fas fa-user"></i>
               </Link>

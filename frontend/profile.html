@@ -164,6 +164,10 @@
                 <i class="fas fa-map-marker-alt"></i>
                 <span>Mes Adresses</span>
             </a>
+            <a href="admin-products.html" id="adminProductsLink" style="display: none;">
+                <i class="fas fa-plus-circle"></i>
+                <span>Ajouter un produit</span>
+            </a>
         </div>
         
         <div class="account-footer">
@@ -195,6 +199,10 @@
             
             if (user.email) {
                 document.getElementById('userEmail').textContent = user.email;
+            }
+
+            if (user.role === 'admin' || user.role === 'superadmin') {
+                document.getElementById('adminProductsLink').style.display = 'flex';
             }
 
             // Fermer le menu en cliquant en dehors

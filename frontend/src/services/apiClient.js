@@ -56,6 +56,36 @@ const Auth = {
   isAuthenticated() {
     return !!localStorage.getItem('bds_token');
   },
+
+  async updateProfile(updates) {
+    const data = await request('/auth/profile', {
+      method: 'PUT',
+      body: JSON.stringify(updates),
+    });
+    localStorage.setItem('bds_user', JSON.stringify(data.user));
+    return data;
+  },
+
+  async changePassword(currentPassword, newPassword) {
+    return request('/auth/change-password', {
+      method: 'PUT',
+      body: JSON.stringify({ current_password: currentPassword, new_password: newPassword }),
+    });
+  },
+
+  async requestPasswordReset(email) {
+    return request('/auth/request-reset', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    });
+  },
+
+  async resetPassword(resetToken, newPassword) {
+    return request('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ reset_token: resetToken, new_password: newPassword }),
+    });
+  },
 };
 
 const Products = {
@@ -74,22 +104,25 @@ const Cart = {
     return request('/cart');
   },
 
-  async add(productId, quantity = 1) {
+  async add(productId, quantity = 1, size = '', color = '') {
     return request('/cart', {
       method: 'POST',
-      body: JSON.stringify({ product_id: productId, quantity }),
+      body: JSON.stringify({ product_id: productId, quantity, size, color }),
     });
   },
 
-  async update(productId, quantity) {
+  async update(productId, quantity, size = '', color = '') {
     return request(`/cart/${productId}`, {
       method: 'PUT',
-      body: JSON.stringify({ quantity }),
+      body: JSON.stringify({ quantity, size, color }),
     });
   },
 
-  async remove(productId) {
-    return request(`/cart/${productId}`, { method: 'DELETE' });
+  async remove(productId, size = '', color = '') {
+    return request(`/cart/${productId}`, {
+      method: 'DELETE',
+      body: JSON.stringify({ size, color }),
+    });
   },
 };
 
@@ -106,4 +139,13 @@ const Orders = {
   },
 };
 
-export { Auth, Products, Cart, Orders };
+const Contact = {
+  async send({ name, email, message }) {
+    return request('/contact', {
+      method: 'POST',
+      body: JSON.stringify({ name, email, message }),
+    });
+  },
+};
+
+export { Auth, Products, Cart, Orders, Contact };

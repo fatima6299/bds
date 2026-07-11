@@ -29,6 +29,8 @@ module.exports = {
     categoryInvalid: 'Catégorie invalide',
     genderInvalid: 'Genre invalide (male, female, unisex)',
     imagesInvalid: 'La galerie d\'images doit être une liste d\'URLs',
+    sizesInvalid: 'Les tailles doivent être une liste séparée par des virgules',
+    colorsInvalid: 'Les couleurs doivent être une liste séparée par des virgules',
     
     // Console logs
     logCreateError: 'Erreur lors de la création du produit:',

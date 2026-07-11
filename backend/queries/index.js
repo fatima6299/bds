@@ -9,10 +9,12 @@ const userQueries = require('./user.queries');
 const productQueries = require('./product.queries');
 const cartQueries = require('./cart.queries');
 const orderQueries = require('./order.queries');
+const contactQueries = require('./contact.queries');
 
 module.exports = {
   user: userQueries,
   product: productQueries,
   cart: cartQueries,
-  order: orderQueries
+  order: orderQueries,
+  contact: contactQueries
 };

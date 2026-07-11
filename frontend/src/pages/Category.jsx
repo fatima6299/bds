@@ -99,9 +99,18 @@ export default function Category() {
     return sorted;
   }, [products, search, brand, type, priceFilter, onlyInStock, sortBy]);
 
-  async function handleAddToCart(productId) {
+  function productHasVariants(product) {
+    return Boolean((product.sizes && product.sizes.trim()) || (product.colors && product.colors.trim()));
+  }
+
+  async function handleAddToCart(product) {
+    if (productHasVariants(product)) {
+      navigate(`/product/${product.id}`);
+      return;
+    }
+
     try {
-      await Cart.add(productId, 1);
+      await Cart.add(product.id, 1);
       window.dispatchEvent(new Event('cart:update'));
     } catch (err) {
       console.error(err);
@@ -254,10 +263,11 @@ export default function Category() {
                     <button
                       className="view-product-btn"
                       type="button"
-                      onClick={() => handleAddToCart(product.id)}
+                      onClick={() => handleAddToCart(product)}
                       disabled={Number(product.stock || 0) === 0}
                     >
-                      <i className="fas fa-cart-plus"></i> Ajouter au panier
+                      <i className="fas fa-cart-plus"></i>
+                      {productHasVariants(product) ? 'Choisir les options' : 'Ajouter au panier'}
                     </button>
                   </div>
                 </article>

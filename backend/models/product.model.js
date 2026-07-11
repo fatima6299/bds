@@ -19,12 +19,14 @@ class Product {
       stock = 0,
       image_url = null,
       images = [],
-      gender = 'unisex'
+      gender = 'unisex',
+      sizes = null,
+      colors = null
     } = productData;
 
     const [result] = await db.query(queries.createProduct, [
       name, description, category, price, discount_percent, stock,
-      image_url, gender
+      image_url, gender, sizes, colors
     ]);
 
     await this.setGalleryImages(result.insertId, images);
@@ -99,12 +101,14 @@ class Product {
       stock,
       image_url,
       images = [],
-      gender
+      gender,
+      sizes = null,
+      colors = null
     } = productData;
 
     await db.query(queries.updateProduct, [
       name, description, category, price, discount_percent, stock,
-      image_url, gender, id
+      image_url, gender, sizes, colors, id
     ]);
 
     await this.setGalleryImages(id, images);

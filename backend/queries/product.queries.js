@@ -11,9 +11,9 @@ module.exports = {
   createProduct: `
     INSERT INTO products (
       name, description, category, price, discount_percent, stock,
-      image_url, gender
+      image_url, gender, sizes, colors
     )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `,
 
   // Galerie d'images additionnelles (product_images)
@@ -72,7 +72,8 @@ module.exports = {
   updateProduct: `
     UPDATE products
     SET name = ?, description = ?, category = ?, price = ?,
-        discount_percent = ?, stock = ?, image_url = ?, gender = ?
+        discount_percent = ?, stock = ?, image_url = ?, gender = ?,
+        sizes = ?, colors = ?
     WHERE id = ?
   `,
   

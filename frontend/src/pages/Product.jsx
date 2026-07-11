@@ -37,6 +37,11 @@ const fallbackProducts = {
   },
 };
 
+function parseVariantList(value) {
+  if (!value) return [];
+  return value.split(',').map((entry) => entry.trim()).filter(Boolean);
+}
+
 export default function Product() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
@@ -45,6 +50,9 @@ export default function Product() {
   const [error, setError] = useState('');
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState('');
+  const [selectedSize, setSelectedSize] = useState('');
+  const [selectedColor, setSelectedColor] = useState('');
+  const [variantError, setVariantError] = useState('');
 
   useEffect(() => {
     async function loadProduct() {
@@ -73,6 +81,9 @@ export default function Product() {
     return images.length > 0 ? images : ['images/products/computers/im3.jpeg'];
   }, [product]);
 
+  const sizeOptions = useMemo(() => parseVariantList(product?.sizes), [product]);
+  const colorOptions = useMemo(() => parseVariantList(product?.colors), [product]);
+
   if (loading) {
     return <div className="container"><p>Chargement du produit...</p></div>;
   }
@@ -88,11 +99,22 @@ export default function Product() {
   }
 
   async function handleAddToCart() {
+    setVariantError('');
+
+    if (sizeOptions.length > 0 && !selectedSize) {
+      setVariantError('Veuillez choisir une taille avant d\'ajouter ce produit au panier.');
+      return;
+    }
+    if (colorOptions.length > 0 && !selectedColor) {
+      setVariantError('Veuillez choisir une couleur avant d\'ajouter ce produit au panier.');
+      return;
+    }
+
     try {
-      await Cart.add(product.id, quantity);
+      await Cart.add(product.id, quantity, selectedSize, selectedColor);
       window.dispatchEvent(new Event('cart:update'));
     } catch (err) {
-      console.error(err);
+      setVariantError(err.message || "Erreur lors de l'ajout au panier.");
     }
   }
 
@@ -145,6 +167,32 @@ export default function Product() {
               {product.screen && <p><strong>Écran :</strong> {product.screen}</p>}
               {product.state && <p><strong>État :</strong> {product.state}</p>}
             </div>
+
+            {sizeOptions.length > 0 && (
+              <div className="variant-selector">
+                <label htmlFor="size">Taille *</label>
+                <select id="size" value={selectedSize} onChange={(event) => setSelectedSize(event.target.value)}>
+                  <option value="">Choisir une taille</option>
+                  {sizeOptions.map((size) => (
+                    <option key={size} value={size}>{size}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {colorOptions.length > 0 && (
+              <div className="variant-selector">
+                <label htmlFor="color">Couleur *</label>
+                <select id="color" value={selectedColor} onChange={(event) => setSelectedColor(event.target.value)}>
+                  <option value="">Choisir une couleur</option>
+                  {colorOptions.map((color) => (
+                    <option key={color} value={color}>{color}</option>
+                  ))}
+                </select>
+              </div>
+            )}
+
+            {variantError && <p className="variant-error">{variantError}</p>}
 
             <div className="quantity-selector">
               <label htmlFor="quantity">Quantité</label>

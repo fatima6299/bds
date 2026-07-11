@@ -8,15 +8,15 @@ const db = require('../../config/db');
 const queries = require('../queries').cart;
 
 class Cart {
-  // Ajouter un produit au panier
-  static async addItem(userId, productId, quantity) {
-    await db.query(queries.addToCart, [userId, productId, quantity]);
+  // Ajouter un produit au panier (size/color = '' si le produit n'a pas de variante)
+  static async addItem(userId, productId, quantity, size = '', color = '') {
+    await db.query(queries.addToCart, [userId, productId, quantity, size, color]);
     return this.getCartByUserId(userId);
   }
 
   // Ajouter ou mettre à jour avec une quantité spécifique
-  static async addOrUpdateItem(userId, productId, quantity) {
-    await db.query(queries.addOrUpdateCart, [userId, productId, quantity, quantity]);
+  static async addOrUpdateItem(userId, productId, quantity, size = '', color = '') {
+    await db.query(queries.addOrUpdateCart, [userId, productId, quantity, size, color, quantity]);
     return this.getCartByUserId(userId);
   }
 
@@ -26,9 +26,9 @@ class Cart {
     return rows;
   }
 
-  // Vérifier si un produit est dans le panier
-  static async getCartItem(userId, productId) {
-    const [rows] = await db.query(queries.getCartItem, [userId, productId]);
+  // Vérifier si un produit (avec cette variante) est dans le panier
+  static async getCartItem(userId, productId, size = '', color = '') {
+    const [rows] = await db.query(queries.getCartItem, [userId, productId, size, color]);
     return rows[0];
   }
 
@@ -51,20 +51,20 @@ class Cart {
   }
 
   // Mettre à jour la quantité d'un produit
-  static async updateQuantity(userId, productId, quantity) {
-    await db.query(queries.updateQuantity, [quantity, userId, productId]);
+  static async updateQuantity(userId, productId, quantity, size = '', color = '') {
+    await db.query(queries.updateQuantity, [quantity, userId, productId, size, color]);
     return this.getCartByUserId(userId);
   }
 
   // Incrémenter la quantité
-  static async incrementQuantity(userId, productId, quantity) {
-    await db.query(queries.incrementQuantity, [quantity, userId, productId]);
+  static async incrementQuantity(userId, productId, quantity, size = '', color = '') {
+    await db.query(queries.incrementQuantity, [quantity, userId, productId, size, color]);
     return this.getCartByUserId(userId);
   }
 
   // Retirer un produit du panier
-  static async removeItem(userId, productId) {
-    const [result] = await db.query(queries.removeFromCart, [userId, productId]);
+  static async removeItem(userId, productId, size = '', color = '') {
+    const [result] = await db.query(queries.removeFromCart, [userId, productId, size, color]);
     return result.affectedRows > 0;
   }
 

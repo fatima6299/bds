@@ -55,6 +55,9 @@ export default function Login() {
         <p className="register-link">
           Pas de compte ? <Link to="/register">S'inscrire</Link>
         </p>
+        <p className="register-link">
+          <Link to="/forgot-password">Mot de passe oublié ?</Link>
+        </p>
       </div>
     </div>
   );

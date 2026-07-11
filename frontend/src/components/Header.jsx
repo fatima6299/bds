@@ -1,12 +1,14 @@
 import { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Auth, Cart } from '../services/apiClient';
 import logo from '../../images/logo-bdsbusiness.png';
 
 export default function Header() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [cartCount, setCartCount] = useState(0);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     setUser(Auth.getCurrentUser());
@@ -41,12 +43,27 @@ export default function Header() {
           </Link>
         </div>
 
-        <div className="search-bar">
-          <input type="text" id="searchInput" placeholder="Rechercher des produits..." />
-          <button className="search-btn">
+        <form
+          className="search-bar"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const query = searchQuery.trim();
+            if (query) {
+              navigate(`/search?q=${encodeURIComponent(query)}`);
+            }
+          }}
+        >
+          <input
+            type="text"
+            id="searchInput"
+            placeholder="Rechercher des produits..."
+            value={searchQuery}
+            onChange={(event) => setSearchQuery(event.target.value)}
+          />
+          <button type="submit" className="search-btn">
             <i className="fas fa-search"></i>
           </button>
-        </div>
+        </form>
 
         <div className="header-actions">
           {user ? (

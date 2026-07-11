@@ -15,12 +15,16 @@ const { cart } = require('../locales');
 // Validations pour ajouter au panier
 const addToCartValidation = [
   body('product_id').isInt({ min: 1 }).withMessage(cart.productIdRequired),
-  body('quantity').isInt({ min: 1 }).withMessage(cart.quantityInvalid)
+  body('quantity').isInt({ min: 1 }).withMessage(cart.quantityInvalid),
+  body('size').optional().isString(),
+  body('color').optional().isString()
 ];
 
 // Validations pour mettre à jour la quantité
 const updateQuantityValidation = [
-  body('quantity').isInt({ min: 1 }).withMessage(cart.quantityInvalid)
+  body('quantity').isInt({ min: 1 }).withMessage(cart.quantityInvalid),
+  body('size').optional().isString(),
+  body('color').optional().isString()
 ];
 
 // Toutes les routes du panier sont protégées (utilisateur connecté uniquement)

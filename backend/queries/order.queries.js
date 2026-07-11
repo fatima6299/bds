@@ -14,8 +14,8 @@ module.exports = {
   `,
   
   createOrderItem: `
-    INSERT INTO order_items (order_id, product_id, quantity, unit_price) 
-    VALUES (?, ?, ?, ?)
+    INSERT INTO order_items (order_id, product_id, quantity, unit_price, size, color)
+    VALUES (?, ?, ?, ?, ?, ?)
   `,
 
   // Lecture

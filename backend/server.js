@@ -40,6 +40,7 @@ app.use("/api/products", require("./routes/product.routes"));
 app.use("/api/cart", require("./routes/cart.routes"));
 app.use("/api/orders", require("./routes/order.routes"));
 app.use("/api/upload", require("./routes/upload.routes"));
+app.use("/api/contact", require("./routes/contact.routes"));
 
 // Middleware de gestion d'erreurs (doit être en dernier)
 const errorHandler = require('./middleware/error.middleware');

@@ -25,6 +25,8 @@ module.exports = {
     // Validation
     productIdRequired: 'ID du produit requis',
     quantityRequired: 'Quantité requise',
-    quantityInvalid: 'La quantité doit être un nombre positif'
+    quantityInvalid: 'La quantité doit être un nombre positif',
+    sizeRequired: 'Veuillez choisir une taille pour ce produit.',
+    colorRequired: 'Veuillez choisir une couleur pour ce produit.'
   }
 };

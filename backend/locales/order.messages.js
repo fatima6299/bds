@@ -15,7 +15,8 @@ module.exports = {
     // Erreurs
     orderNotFound: 'Commande non trouvée.',
     emptyCart: 'Votre panier est vide.',
-    insufficientStock: 'Stock insuffisant pour certains produits.',
+    insufficientStock: 'Stock insuffisant pour',
+    availableLabel: 'disponible',
     createOrderError: 'Erreur lors de la création de la commande.',
     updateOrderError: 'Erreur lors de la mise à jour de la commande.',
     retrieveOrdersError: 'Erreur lors de la récupération des commandes.',

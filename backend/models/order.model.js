@@ -15,8 +15,8 @@ class Order {
   }
 
   // Créer un item de commande
-  static async createOrderItem(orderId, productId, quantity, unitPrice) {
-    await db.query(queries.createOrderItem, [orderId, productId, quantity, unitPrice]);
+  static async createOrderItem(orderId, productId, quantity, unitPrice, size = null, color = null) {
+    await db.query(queries.createOrderItem, [orderId, productId, quantity, unitPrice, size || null, color || null]);
   }
 
   // Trouver une commande par ID avec infos utilisateur

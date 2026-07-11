@@ -35,7 +35,7 @@ exports.createOrder = async (req, res) => {
       if (item.quantity > availableStock) {
         return res.status(400).json({
           success: false,
-          message: order.insufficientStock,
+          message: `${order.insufficientStock} "${item.name}" (${order.availableLabel}: ${availableStock}).`,
           product: item.name,
           available: availableStock
         });
@@ -58,7 +58,9 @@ exports.createOrder = async (req, res) => {
         orderId,
         item.product_id,
         item.quantity,
-        item.discounted_price
+        item.discounted_price,
+        item.size,
+        item.color
       );
 
       // Décrémenter le stock du produit
@@ -99,10 +101,14 @@ exports.getUserOrders = async (req, res) => {
     const orders = await Order.findByUserId(userId);
     const count = await Order.countUserOrders(userId);
 
+    const ordersWithItems = await Promise.all(
+      orders.map(async (o) => ({ ...o, items: await Order.findOrderItems(o.id) }))
+    );
+
     res.json({
       success: true,
       count,
-      orders
+      orders: ordersWithItems
     });
   } catch (error) {
     console.error('❌ Erreur lors de la récupération des commandes:', error);

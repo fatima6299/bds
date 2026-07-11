@@ -7,12 +7,15 @@
 const Cart = require('../models/cart.model');
 const Product = require('../models/product.model');
 const { cart } = require('../locales');
+const { parseVariantList } = require('../utils/variants');
 
 // Ajouter un produit au panier
 exports.addToCart = async (req, res) => {
   try {
     const userId = req.user.id;
     const { product_id, quantity } = req.body;
+    const size = (req.body.size || '').trim();
+    const color = (req.body.color || '').trim();
 
     // Vérifier que le produit existe
     const product = await Product.findById(product_id);
@@ -23,13 +26,33 @@ exports.addToCart = async (req, res) => {
       });
     }
 
+    // Vérifier que la taille/couleur choisie fait partie des options du produit
+    const availableSizes = parseVariantList(product.sizes);
+    const availableColors = parseVariantList(product.colors);
+
+    if (availableSizes.length > 0 && !availableSizes.includes(size)) {
+      return res.status(400).json({
+        success: false,
+        message: cart.sizeRequired,
+        sizes: availableSizes
+      });
+    }
+
+    if (availableColors.length > 0 && !availableColors.includes(color)) {
+      return res.status(400).json({
+        success: false,
+        message: cart.colorRequired,
+        colors: availableColors
+      });
+    }
+
     // Vérifier le stock disponible
     const availableStock = await Product.checkStock(product_id);
-    
-    // Vérifier si le produit est déjà dans le panier
-    const existingItem = await Cart.getCartItem(userId, product_id);
+
+    // Vérifier si cette variante précise est déjà dans le panier
+    const existingItem = await Cart.getCartItem(userId, product_id, size, color);
     const totalQuantity = existingItem ? existingItem.quantity + quantity : quantity;
-    
+
     if (totalQuantity > availableStock) {
       return res.status(400).json({
         success: false,
@@ -39,7 +62,7 @@ exports.addToCart = async (req, res) => {
     }
 
     // Ajouter au panier
-    await Cart.addItem(userId, product_id, quantity);
+    await Cart.addItem(userId, product_id, quantity, size, color);
 
     // Récupérer le panier mis à jour
     const updatedCart = await Cart.getCartByUserId(userId);
@@ -90,9 +113,11 @@ exports.updateCartItem = async (req, res) => {
     const userId = req.user.id;
     const { productId } = req.params;
     const { quantity } = req.body;
+    const size = (req.body.size || '').trim();
+    const color = (req.body.color || '').trim();
 
     // Vérifier que l'item existe dans le panier
-    const cartItem = await Cart.getCartItem(userId, productId);
+    const cartItem = await Cart.getCartItem(userId, productId, size, color);
     if (!cartItem) {
       return res.status(404).json({
         success: false,
@@ -111,7 +136,7 @@ exports.updateCartItem = async (req, res) => {
     }
 
     // Mettre à jour la quantité
-    await Cart.updateQuantity(userId, productId, quantity);
+    await Cart.updateQuantity(userId, productId, quantity, size, color);
 
     // Récupérer le panier mis à jour
     const updatedCart = await Cart.getCartByUserId(userId);
@@ -137,9 +162,11 @@ exports.removeFromCart = async (req, res) => {
   try {
     const userId = req.user.id;
     const { productId } = req.params;
+    const size = (req.body.size || '').trim();
+    const color = (req.body.color || '').trim();
 
     // Vérifier que l'item existe dans le panier
-    const cartItem = await Cart.getCartItem(userId, productId);
+    const cartItem = await Cart.getCartItem(userId, productId, size, color);
     if (!cartItem) {
       return res.status(404).json({
         success: false,
@@ -148,7 +175,7 @@ exports.removeFromCart = async (req, res) => {
     }
 
     // Retirer du panier
-    await Cart.removeItem(userId, productId);
+    await Cart.removeItem(userId, productId, size, color);
 
     // Récupérer le panier mis à jour
     const updatedCart = await Cart.getCartByUserId(userId);

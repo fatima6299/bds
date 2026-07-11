@@ -1,15 +1,35 @@
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Auth } from '../services/apiClient';
+import { Auth, Cart } from '../services/apiClient';
 import logo from '../../images/logo-bdsbusiness.png';
 
 export default function Header() {
   const location = useLocation();
   const [user, setUser] = useState(null);
+  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     setUser(Auth.getCurrentUser());
   }, [location]);
+
+  useEffect(() => {
+    async function refreshCartCount() {
+      if (!Auth.isAuthenticated()) {
+        setCartCount(0);
+        return;
+      }
+      try {
+        const data = await Cart.get();
+        setCartCount(data.count || 0);
+      } catch (err) {
+        setCartCount(0);
+      }
+    }
+
+    refreshCartCount();
+    window.addEventListener('cart:update', refreshCartCount);
+    return () => window.removeEventListener('cart:update', refreshCartCount);
+  }, [user]);
 
   return (
     <header className="header">
@@ -58,7 +78,7 @@ export default function Header() {
           )}
           <Link to="/cart" className="cart" title="Panier">
             <i className="fas fa-shopping-cart"></i>
-            <span className="cart-count">0</span>
+            <span className="cart-count">{cartCount}</span>
           </Link>
         </div>
       </div>

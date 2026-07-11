@@ -45,7 +45,6 @@ export default function Category() {
   const [priceFilter, setPriceFilter] = useState('all');
   const [onlyInStock, setOnlyInStock] = useState(false);
   const [sortBy, setSortBy] = useState('featured');
-  const [cartCount, setCartCount] = useState(0);
 
   useEffect(() => {
     async function loadProducts() {
@@ -64,13 +63,6 @@ export default function Category() {
 
     loadProducts();
   }, [label]);
-
-  useEffect(() => {
-    const savedCart = localStorage.getItem('bds_cart_count');
-    if (savedCart) {
-      setCartCount(Number(savedCart));
-    }
-  }, []);
 
   const filteredProducts = useMemo(() => {
     const normalizedSearch = search.toLowerCase();
@@ -110,9 +102,7 @@ export default function Category() {
   async function handleAddToCart(productId) {
     try {
       await Cart.add(productId, 1);
-      const nextCount = cartCount + 1;
-      setCartCount(nextCount);
-      localStorage.setItem('bds_cart_count', String(nextCount));
+      window.dispatchEvent(new Event('cart:update'));
     } catch (err) {
       console.error(err);
     }

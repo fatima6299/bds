@@ -90,8 +90,6 @@ export default function Product() {
   async function handleAddToCart() {
     try {
       await Cart.add(product.id, quantity);
-      const count = Number(localStorage.getItem('bds_cart_count') || 0) + quantity;
-      localStorage.setItem('bds_cart_count', String(count));
       window.dispatchEvent(new Event('cart:update'));
     } catch (err) {
       console.error(err);

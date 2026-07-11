@@ -2,10 +2,44 @@ import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { Auth, Orders as OrdersService } from '../services/apiClient';
 import { formatPrice, formatDate, formatOrderStatus } from '../utils/format';
+import { PAYMENT_METHODS, WHATSAPP_NUMBER } from '../utils/payment';
 
 function formatVariant(item) {
   const parts = [item.size && `Taille : ${item.size}`, item.color && `Couleur : ${item.color}`].filter(Boolean);
   return parts.length > 0 ? ` (${parts.join(', ')})` : '';
+}
+
+function buildWhatsappLink(orderId, amount) {
+  const message = `Bonjour, je viens d'effectuer le paiement de la commande #${orderId} (${formatPrice(amount)} FCFA). Voici la confirmation (capture d'écran en pièce jointe).`;
+  return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+}
+
+function PaymentInstructions({ orderId, amount }) {
+  return (
+    <div className="payment-instructions">
+      <h4><i className="fas fa-mobile-alt"></i> Comment payer</h4>
+      <p>
+        Envoyez <strong>{formatPrice(amount)} FCFA</strong> via l'un des moyens ci-dessous, en indiquant
+        la référence <strong>#{orderId}</strong> dans le motif du paiement. Votre commande sera confirmée
+        par notre équipe dès réception.
+      </p>
+      <ul className="payment-methods-list">
+        {PAYMENT_METHODS.map((method) => (
+          <li key={method.name}>
+            <strong>{method.name}</strong> : {method.number} — {method.accountName}
+          </li>
+        ))}
+      </ul>
+      <a
+        href={buildWhatsappLink(orderId, amount)}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="whatsapp-confirm-btn"
+      >
+        <i className="fab fa-whatsapp"></i> Envoyer la confirmation sur WhatsApp
+      </a>
+    </div>
+  );
 }
 
 export default function Orders() {
@@ -62,6 +96,9 @@ export default function Orders() {
               <p className="order-confirmation-total">
                 Total : {formatPrice(justPlaced.total_amount)} FCFA
               </p>
+              {justPlaced.payment_status === 'pending' && (
+                <PaymentInstructions orderId={justPlaced.id} amount={justPlaced.total_amount} />
+              )}
             </div>
           </div>
         )}
@@ -91,6 +128,12 @@ export default function Orders() {
                 <p className="order-total">
                   <strong>Total :</strong> {formatPrice(order.total_amount)} FCFA
                 </p>
+                {order.payment_status === 'pending' && (
+                  <details className="order-payment-details">
+                    <summary>Comment payer cette commande ?</summary>
+                    <PaymentInstructions orderId={order.id} amount={order.total_amount} />
+                  </details>
+                )}
               </div>
             ))}
           </div>

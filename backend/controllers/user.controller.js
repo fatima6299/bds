@@ -5,7 +5,7 @@
  */
 
 const User = require('../models/user.model');
-const { user } = require('../locales');
+const { user, auth } = require('../locales');
 const queries = require('../queries').user;
 const db = require('../../config/db');
 

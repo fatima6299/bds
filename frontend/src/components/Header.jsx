@@ -69,9 +69,17 @@ export default function Header() {
           {user ? (
             <>
               {(user.role === 'admin' || user.role === 'superadmin') && (
-                <a href="/admin-products.html" className="account" title="Ajouter un produit">
-                  <i className="fas fa-plus-circle"></i>
-                </a>
+                <>
+                  <a href="/admin-products.html" className="account" title="Gérer les produits">
+                    <i className="fas fa-plus-circle"></i>
+                  </a>
+                  <a href="/admin-orders.html" className="account" title="Gérer les commandes">
+                    <i className="fas fa-receipt"></i>
+                  </a>
+                  <a href="/admin-users.html" className="account" title="Gérer les utilisateurs">
+                    <i className="fas fa-users-cog"></i>
+                  </a>
+                </>
               )}
               <Link to="/profile" className="account" title="Mon compte">
                 <i className="fas fa-user"></i>

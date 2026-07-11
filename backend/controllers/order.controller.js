@@ -126,11 +126,15 @@ exports.getAllOrders = async (req, res) => {
     const count = await Order.count();
     const totalSales = await Order.getTotalSales();
 
+    const ordersWithItems = await Promise.all(
+      orders.map(async (o) => ({ ...o, items: await Order.findOrderItems(o.id) }))
+    );
+
     res.json({
       success: true,
       count,
       totalSales,
-      orders
+      orders: ordersWithItems
     });
   } catch (error) {
     console.error('❌ Erreur lors de la récupération des commandes:', error);

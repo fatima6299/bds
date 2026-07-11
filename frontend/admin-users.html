@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des utilisateurs - BDS BUSINESS</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .admin-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px 20px;
+            text-align: center;
+            border-radius: 12px 12px 0 0;
+            margin-bottom: 30px;
+        }
+        .admin-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        .access-denied {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .access-denied i {
+            font-size: 60px;
+            color: #f44336;
+            margin-bottom: 20px;
+        }
+        .admin-list-section {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 24px;
+        }
+        .admin-list-section h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        .user-row {
+            display: grid;
+            grid-template-columns: 1fr auto auto;
+            gap: 15px;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 1px solid #eee;
+        }
+        .user-row:last-child {
+            border-bottom: none;
+        }
+        .user-row-info .name {
+            font-weight: 600;
+            color: #333;
+        }
+        .user-row-info .meta {
+            font-size: 13px;
+            color: #777;
+        }
+        .role-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            background: #eef4ff;
+            color: #0056b3;
+        }
+        .role-badge.superadmin {
+            background: #fdf2f8;
+            color: #be185d;
+        }
+        .btn-delete {
+            padding: 8px 16px;
+            background: #fef2f2;
+            color: #dc2626;
+            border: 1px solid #fecaca;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-delete:hover {
+            background: #fee2e2;
+        }
+        .btn-delete:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        @media (max-width: 600px) {
+            .user-row {
+                grid-template-columns: 1fr;
+                gap: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- En-tête -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="/">
+                    <img src="images/logo-bdsbusiness.png" alt="BDS BUSINESS Logo" class="logo-img">
+                    <span class="logo-text">BDS BUSINESS</span>
+                </a>
+            </div>
+            <nav class="main-nav">
+                <ul>
+                    <li><a href="/">Accueil</a></li>
+                    <li><a href="admin-products.html">Produits (admin)</a></li>
+                    <li><a href="admin-orders.html">Commandes (admin)</a></li>
+                    <li><a href="/contact">Contact</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <a href="/profile" class="account" title="Mon compte"><i class="fas fa-user"></i></a>
+                <a href="/cart" class="cart" title="Panier">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <div class="admin-container">
+        <div id="adminContent">
+            <!-- Rempli dynamiquement selon le rôle -->
+        </div>
+    </div>
+
+    <!-- Pied de page -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>BDS BUSINESS</h3>
+                    <p>Votre partenaire de confiance pour tous vos achats en ligne.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 BDS BUSINESS. Tous droits réservés.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/api-client.js"></script>
+    <script>
+        const apiClient = new BDSApiClient();
+        const adminContent = document.getElementById('adminContent');
+
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!apiClient.isAuthenticated() || !apiClient.isAdmin()) {
+                renderAccessDenied();
+                return;
+            }
+            renderPage();
+        });
+
+        function renderAccessDenied() {
+            adminContent.innerHTML = `
+                <div class="access-denied">
+                    <i class="fas fa-lock"></i>
+                    <h2>Accès réservé aux administrateurs</h2>
+                    <p>Vous devez être connecté avec un compte admin pour gérer les utilisateurs.</p>
+                    <a href="/login" class="shop-now-btn">Se connecter</a>
+                </div>
+            `;
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str || '';
+            return div.innerHTML;
+        }
+
+        function formatDate(value) {
+            return new Date(value).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
+        }
+
+        function renderPage() {
+            const isSuperAdmin = apiClient.user.role === 'superadmin';
+
+            adminContent.innerHTML = `
+                <div class="admin-header">
+                    <h1><i class="fas fa-users"></i> Gestion des utilisateurs</h1>
+                    <p>Réservé aux administrateurs</p>
+                </div>
+                <div class="admin-list-section">
+                    <h2>Utilisateurs</h2>
+                    <div id="usersList">Chargement...</div>
+                </div>
+                ${isSuperAdmin ? `
+                    <div class="admin-list-section">
+                        <h2>Administrateurs</h2>
+                        <div id="adminsList">Chargement...</div>
+                    </div>
+                ` : ''}
+            `;
+
+            loadUsers();
+            if (isSuperAdmin) {
+                loadAdmins();
+            }
+        }
+
+        async function loadUsers() {
+            const container = document.getElementById('usersList');
+            try {
+                const data = await apiClient.getUsers();
+                renderUserRows(container, data.users || [], false);
+            } catch (error) {
+                container.innerHTML = `<p>Erreur lors du chargement des utilisateurs : ${error.message}</p>`;
+            }
+        }
+
+        async function loadAdmins() {
+            const container = document.getElementById('adminsList');
+            try {
+                const data = await apiClient.getAdmins();
+                renderUserRows(container, data.admins || [], true);
+            } catch (error) {
+                container.innerHTML = `<p>Erreur lors du chargement des administrateurs : ${error.message}</p>`;
+            }
+        }
+
+        function renderUserRows(container, users, showRole) {
+            if (users.length === 0) {
+                container.innerHTML = '<p>Aucun utilisateur.</p>';
+                return;
+            }
+
+            container.innerHTML = users.map(u => `
+                <div class="user-row">
+                    <div class="user-row-info">
+                        <div class="name">
+                            ${escapeHtml(u.firstname)} ${escapeHtml(u.lastname)}
+                            ${showRole ? `<span class="role-badge ${u.role}">${u.role}</span>` : ''}
+                        </div>
+                        <div class="meta">${escapeHtml(u.email || '')} ${u.phone ? '· ' + escapeHtml(u.phone) : ''} · Inscrit le ${formatDate(u.created_at)}</div>
+                    </div>
+                    <button type="button" class="btn-delete" data-id="${u.id}" data-name="${escapeHtml(u.firstname)} ${escapeHtml(u.lastname)}">
+                        <i class="fas fa-trash-alt"></i> Supprimer
+                    </button>
+                </div>
+            `).join('');
+
+            container.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', async () => {
+                    if (!confirm(`Supprimer définitivement le compte de "${btn.dataset.name}" ? Cette action est irréversible.`)) {
+                        return;
+                    }
+                    btn.disabled = true;
+                    try {
+                        await apiClient.deleteUser(btn.dataset.id);
+                        renderPage();
+                    } catch (error) {
+                        alert(error.message || "Erreur lors de la suppression de l'utilisateur");
+                        btn.disabled = false;
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

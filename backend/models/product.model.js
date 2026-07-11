@@ -18,11 +18,14 @@ class Product {
       discount_percent = 0, 
       stock = 0, 
       image_url = null, 
+      image_url_2 = null,
+      image_url_3 = null,
       gender = 'unisex' 
     } = productData;
     
     const [result] = await db.query(queries.createProduct, [
-      name, description, category, price, discount_percent, stock, image_url, gender
+      name, description, category, price, discount_percent, stock,
+      image_url, image_url_2, image_url_3, gender
     ]);
     
     return result.insertId;
@@ -80,12 +83,15 @@ class Product {
       price, 
       discount_percent, 
       stock, 
-      image_url, 
+      image_url,
+      image_url_2,
+      image_url_3,
       gender 
     } = productData;
     
     await db.query(queries.updateProduct, [
-      name, description, category, price, discount_percent, stock, image_url, gender, id
+      name, description, category, price, discount_percent, stock,
+      image_url, image_url_2, image_url_3, gender, id
     ]);
     
     return this.findById(id);

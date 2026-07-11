@@ -9,8 +9,11 @@
 module.exports = {
   // Création
   createProduct: `
-    INSERT INTO products (name, description, category, price, discount_percent, stock, image_url, gender) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    INSERT INTO products (
+      name, description, category, price, discount_percent, stock,
+      image_url, image_url_2, image_url_3, gender
+    )
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `,
 
   // Lecture
@@ -55,7 +58,8 @@ module.exports = {
   updateProduct: `
     UPDATE products 
     SET name = ?, description = ?, category = ?, price = ?, 
-        discount_percent = ?, stock = ?, image_url = ?, gender = ? 
+        discount_percent = ?, stock = ?, image_url = ?,
+        image_url_2 = ?, image_url_3 = ?, gender = ?
     WHERE id = ?
   `,
   

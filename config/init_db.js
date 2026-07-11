@@ -66,6 +66,19 @@ async function initDB() {
   `);
   console.log('✅ Table products créée');
 
+  // Table product_images (galerie d'images additionnelles par produit)
+  await connection.query(`
+    CREATE TABLE IF NOT EXISTS product_images (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        product_id INT NOT NULL,
+        image_url VARCHAR(255) NOT NULL,
+        position INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+    );
+  `);
+  console.log('✅ Table product_images créée');
+
   // Table orders
   await connection.query(`
     CREATE TABLE IF NOT EXISTS orders (

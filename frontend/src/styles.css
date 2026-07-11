@@ -734,10 +734,15 @@ body {
 .product-thumbnails {
   display: flex;
   gap: 12px;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
 }
 
 .thumbnail-btn {
+  flex: 0 0 84px;
   width: 84px;
   height: 84px;
   padding: 0;

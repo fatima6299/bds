@@ -118,6 +118,19 @@ body {
   gap: 8px;
 }
 
+.menu-toggle {
+  display: none;
+  order: 2;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  background: var(--gray-light);
+  color: var(--text-color);
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
 .hero-section {
   padding: 40px 0;
 }

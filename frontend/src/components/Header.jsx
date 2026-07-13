@@ -9,9 +9,11 @@ export default function Header() {
   const [user, setUser] = useState(null);
   const [cartCount, setCartCount] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     setUser(Auth.getCurrentUser());
+    setMenuOpen(false);
   }, [location]);
 
   useEffect(() => {
@@ -43,7 +45,17 @@ export default function Header() {
           </Link>
         </div>
 
-        <nav className="main-nav">
+        <button
+          type="button"
+          className="menu-toggle"
+          aria-label="Ouvrir le menu"
+          aria-expanded={menuOpen}
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <i className={`fas ${menuOpen ? 'fa-times' : 'fa-bars'}`}></i>
+        </button>
+
+        <nav className={`main-nav ${menuOpen ? 'open' : ''}`}>
           <ul>
             <li><Link to="/">Accueil</Link></li>
             <li><Link to="/category/abayas">Abayas</Link></li>

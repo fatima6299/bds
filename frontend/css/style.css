@@ -1171,29 +1171,72 @@ body {
 
 /* Styles responsifs */
 @media (max-width: 768px) {
-    .header .container {
-        flex-direction: column;
-        padding: 15px;
-    }
-    
-    .main-nav {
-        margin: 20px 0;
-    }
-    
-    .main-nav ul {
-        flex-direction: column;
-        text-align: center;
-    }
-    
-    .main-nav li {
-        margin: 10px 0;
-    }
-    
     .hero {
         padding: 120px 0 80px;
     }
-    
+
     .hero h2 {
         font-size: 2rem;
+    }
+}
+
+/* Header mobile : logo + bouton menu + icônes sur une ligne, recherche et nav
+   en pleine largeur en dessous (nav repliable). Sélecteur à 3 classes
+   (.header .container.header-container) pour passer devant .header .container
+   de responsive.css (chargé après ce fichier, même spécificité sinon). */
+@media (max-width: 768px) {
+    .header .container.header-container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 0;
+        gap: 10px;
+    }
+
+    .header .logo {
+        order: 1;
+    }
+
+    .header .menu-toggle {
+        display: block;
+        order: 2;
+    }
+
+    .header .header-actions {
+        order: 3;
+        margin-left: auto;
+    }
+
+    .header .search-bar {
+        order: 4;
+        flex: 1 1 100%;
+        max-width: 100%;
+        margin-top: 10px;
+    }
+
+    .header .main-nav {
+        order: 5;
+        flex-basis: 100%;
+        margin: 10px 0 0;
+        display: none;
+    }
+
+    .header .main-nav.open {
+        display: block;
+    }
+
+    .header .main-nav ul {
+        flex-direction: column;
+        text-align: left;
+        gap: 0;
+    }
+
+    .header .main-nav li {
+        margin: 0;
+        border-top: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+    }
+
+    .header .main-nav a {
+        display: block;
+        padding: 12px 4px;
     }
 }

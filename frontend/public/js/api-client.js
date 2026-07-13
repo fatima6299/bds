@@ -20,7 +20,9 @@ function isTokenExpired(token) {
 }
 
 class BDSApiClient {
-  constructor(baseURL = 'http://localhost:3000/api') {
+  // Pas de build (fichier chargé tel quel) : on suppose que le backend tourne
+  // sur le port 3000 du même hôte que la page (déploiement simple).
+  constructor(baseURL = `${window.location.protocol}//${window.location.hostname}:3000/api`) {
     this.baseURL = baseURL;
     this.token = localStorage.getItem('bds_token');
     this.user = JSON.parse(localStorage.getItem('bds_user') || 'null');

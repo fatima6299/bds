@@ -1,4 +1,7 @@
-const API_BASE_URL = 'http://localhost:3000/api';
+// Configurable via VITE_API_BASE_URL (voir frontend/.env). À défaut, on suppose que
+// le backend tourne sur le port 3000 du même hôte que le site (déploiement simple).
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || `${window.location.protocol}//${window.location.hostname}:3000/api`;
 
 function decodeJwtPayload(token) {
   try {

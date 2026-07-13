@@ -1034,66 +1034,45 @@ Importer cette collection Postman :
 
 ## 🚀 Déploiement
 
-### Variables d'environnement production
+Architecture retenue : **Netlify** (frontend React) + **Render** (backend Node/Express) + **Railway ou Clever Cloud** (base MySQL). Les trois services sont indépendants ; l'ordre ci-dessous évite les dépendances circulaires.
+
+### 1. Base de données (Railway ou Clever Cloud)
+
+Créer une base MySQL sur la plateforme choisie, puis noter les identifiants fournis (host, port, utilisateur, mot de passe, nom de la base — le port est rarement 3306 par défaut sur ces hébergeurs managés). Exécuter `node config/init_db.js` une fois en pointant vers cette base pour créer les tables (via les variables d'environnement, voir étape 2).
+
+### 2. Backend (Render)
+
+- **Build command** : `npm install`
+- **Start command** : `node backend/server.js`
+- **Variables d'environnement** à définir dans le dashboard Render (elles remplacent `.env.production`, qui n'est jamais déployé car ignoré par git) :
 
 ```env
-DB_HOST=your-production-db-host
-DB_USER=your-db-user
-DB_PASSWORD=your-secure-db-password
-DB_NAME=bds_production
-JWT_SECRET=your-ultra-secure-jwt-secret-256-bits-minimum
+DB_HOST=<fourni par Railway/Clever Cloud>
+DB_PORT=<fourni par Railway/Clever Cloud>
+DB_USER=<fourni par Railway/Clever Cloud>
+DB_PASSWORD=<fourni par Railway/Clever Cloud>
+DB_NAME=bds
+DB_SSL=true   # si l'hébergeur MySQL l'exige
+JWT_SECRET=<généré avec: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))">
+JWT_EXPIRES_IN=7d
 PORT=3000
 NODE_ENV=production
+ALLOWED_ORIGINS=<URL Netlify, définie après l'étape 3>
 ```
 
-### Optimisations pour la production
+⚠️ **Stockage des images produits** : Render utilise un disque éphémère par défaut — les images uploadées via le panneau admin seront perdues à chaque redéploiement. Acceptable pour prototyper ; prévoir un disque persistant Render ou un stockage cloud (Cloudinary, S3...) avant un usage réel.
 
-1. **Token Blacklist** : Migrer vers Redis
-```javascript
-// utils/redisBlacklist.js (recommandé pour la production)
-const redis = require('redis');
-const client = redis.createClient();
+### 3. Frontend (Netlify)
 
-const revokeToken = async (token) => {
-  await client.setEx(token, 7200, 'revoked'); // 2h expiration
-};
+Le fichier `netlify.toml` à la racine du repo configure déjà le build automatiquement (base `frontend/`, commande `npm run build`, dossier `dist/`, redirection SPA). Il ne reste qu'à définir sur Netlify :
 
-const isTokenRevoked = async (token) => {
-  return await client.exists(token);
-};
+```env
+VITE_API_BASE_URL=<URL Render>/api
 ```
 
-2. **Rate Limiting** :
-```bash
-npm install express-rate-limit
-```
+### 4. Boucler la configuration CORS
 
-3. **Logging** :
-```bash
-npm install winston
-```
-
-4. **Monitoring** :
-```bash
-npm install pm2 -g
-pm2 start backend/server.js --name bds-api
-```
-
-### Commandes de déploiement
-
-```bash
-# Build pour la production
-npm install --production
-
-# Démarrer avec PM2
-pm2 start ecosystem.config.js
-
-# Monitoring
-pm2 monit
-
-# Logs
-pm2 logs bds-api
-```
+Une fois l'URL Netlify connue (ex: `https://bds-business.netlify.app`), la reporter dans la variable `ALLOWED_ORIGINS` sur Render puis redéployer le backend — sinon le navigateur bloquera les appels API en production.
 
 ## 📞 Support
 

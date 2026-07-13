@@ -10,6 +10,7 @@ const router = express.Router();
 const authController = require('../controllers/auth.controller');
 const { verifyToken, isAdmin, isSuperAdmin } = require('../middleware/auth.middleware');
 const validate = require('../middleware/validation.middleware');
+const { authLimiter } = require('../middleware/rateLimit.middleware');
 const { auth } = require('../locales');
 
 // Validation rules pour l'inscription
@@ -32,8 +33,8 @@ const loginValidation = [
 ];
 
 // Routes publiques
-router.post('/register', registerValidation, validate, authController.register);
-router.post('/login', loginValidation, validate, authController.login);
+router.post('/register', authLimiter, registerValidation, validate, authController.register);
+router.post('/login', authLimiter, loginValidation, validate, authController.login);
 
 // Routes protégées (nécessitent un token)
 router.get('/profile', verifyToken, authController.getProfile);
@@ -65,7 +66,7 @@ router.put('/change-password', verifyToken, changePasswordValidation, validate, 
 const requestResetValidation = [
   body('email').isEmail().withMessage(auth.emailInvalid)
 ];
-router.post('/request-reset', requestResetValidation, validate, authController.requestPasswordReset);
+router.post('/request-reset', authLimiter, requestResetValidation, validate, authController.requestPasswordReset);
 
 const resetPasswordValidation = [
   body('reset_token').notEmpty().withMessage(auth.resetTokenRequired),
@@ -75,7 +76,7 @@ const resetPasswordValidation = [
     .matches(/[a-z]/).withMessage(auth.passwordLowercase)
     .matches(/[0-9]/).withMessage(auth.passwordNumber)
 ];
-router.post('/reset-password', resetPasswordValidation, validate, authController.resetPassword);
+router.post('/reset-password', authLimiter, resetPasswordValidation, validate, authController.resetPassword);
 
 // Routes admin et superadmin (pour créer des admins)
 router.post('/create-admin', verifyToken, isSuperAdmin, registerValidation, validate, authController.createAdmin);

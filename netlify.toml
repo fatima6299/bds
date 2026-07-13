@@ -1,0 +1,13 @@
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+# Fallback SPA pour les routes React (ex: /category/abayas, /product/12).
+# Netlify sert d'abord les fichiers réels s'ils existent (admin-products.html,
+# css/, js/, images/...), donc cette règle ne s'applique qu'aux routes qui
+# n'ont pas de fichier correspondant dans dist/.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

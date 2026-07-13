@@ -4,11 +4,30 @@
  * Description: Client JavaScript pour l'intégration avec le backend BDS
  */
 
+function decodeJwtPayload(token) {
+  try {
+    const payload = token.split('.')[1];
+    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(normalized));
+  } catch {
+    return null;
+  }
+}
+
+function isTokenExpired(token) {
+  const payload = decodeJwtPayload(token);
+  return !payload || !payload.exp || payload.exp * 1000 < Date.now();
+}
+
 class BDSApiClient {
   constructor(baseURL = 'http://localhost:3000/api') {
     this.baseURL = baseURL;
     this.token = localStorage.getItem('bds_token');
     this.user = JSON.parse(localStorage.getItem('bds_user') || 'null');
+
+    if (this.token && isTokenExpired(this.token)) {
+      this.clearAuth();
+    }
   }
 
   // ==================== UTILITAIRES ====================
@@ -35,11 +54,18 @@ class BDSApiClient {
     try {
       const response = await fetch(url, config);
       const data = await response.json();
-      
+
       if (!response.ok) {
+        // Session expirée/invalide (et pas juste "mauvais identifiants" au login)
+        if (response.status === 401 && this.token && endpoint !== '/auth/login') {
+          this.clearAuth();
+          if (!window.location.pathname.startsWith('/login')) {
+            window.location.href = '/login';
+          }
+        }
         throw new Error(data.message || `Erreur HTTP ${response.status}`);
       }
-      
+
       return data;
     } catch (error) {
       console.error('❌ Erreur API:', error.message);
@@ -140,7 +166,12 @@ class BDSApiClient {
   }
 
   isAuthenticated() {
-    return !!this.token;
+    if (!this.token) return false;
+    if (isTokenExpired(this.token)) {
+      this.clearAuth();
+      return false;
+    }
+    return true;
   }
 
   isAdmin() {

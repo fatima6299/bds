@@ -1,5 +1,25 @@
 const API_BASE_URL = 'http://localhost:3000/api';
 
+function decodeJwtPayload(token) {
+  try {
+    const payload = token.split('.')[1];
+    const normalized = payload.replace(/-/g, '+').replace(/_/g, '/');
+    return JSON.parse(atob(normalized));
+  } catch {
+    return null;
+  }
+}
+
+function isTokenExpired(token) {
+  const payload = decodeJwtPayload(token);
+  return !payload || !payload.exp || payload.exp * 1000 < Date.now();
+}
+
+function clearAuthStorage() {
+  localStorage.removeItem('bds_token');
+  localStorage.removeItem('bds_user');
+}
+
 async function request(endpoint, options = {}) {
   const token = localStorage.getItem('bds_token');
   const headers = {
@@ -15,6 +35,15 @@ async function request(endpoint, options = {}) {
   const data = await response.json();
 
   if (!response.ok) {
+    // Un 401 alors qu'on avait envoyé un token = session expirée/invalide,
+    // pas une erreur métier : on nettoie et on renvoie vers la connexion.
+    // (on exclut /auth/login : un 401 là-bas veut juste dire "mauvais identifiants")
+    if (response.status === 401 && token && endpoint !== '/auth/login') {
+      clearAuthStorage();
+      if (typeof window !== 'undefined' && !window.location.pathname.startsWith('/login')) {
+        window.location.href = '/login';
+      }
+    }
     throw new Error(data.message || `Erreur HTTP ${response.status}`);
   }
 
@@ -43,18 +72,23 @@ const Auth = {
     try {
       await request('/auth/logout', { method: 'POST' });
     } finally {
-      localStorage.removeItem('bds_token');
-      localStorage.removeItem('bds_user');
+      clearAuthStorage();
     }
   },
 
   getCurrentUser() {
+    if (!Auth.isAuthenticated()) return null;
     const user = localStorage.getItem('bds_user');
     return user ? JSON.parse(user) : null;
   },
 
   isAuthenticated() {
-    return !!localStorage.getItem('bds_token');
+    const token = localStorage.getItem('bds_token');
+    if (!token || isTokenExpired(token)) {
+      if (token) clearAuthStorage();
+      return false;
+    }
+    return true;
   },
 
   async updateProfile(updates) {

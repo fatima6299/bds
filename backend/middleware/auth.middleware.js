@@ -33,9 +33,11 @@ const verifyToken = (req, res, next) => {
     req.token = token; // Ajoute le token pour pouvoir le révoquer
     next();
   } catch (error) {
-    return res.status(403).json({ 
-      success: false, 
-      message: auth.tokenInvalid 
+    // 401 (non authentifié) et non 403 (interdit) : un token invalide/expiré
+    // signifie qu'il faut se reconnecter, ce n'est pas un problème de droits.
+    return res.status(401).json({
+      success: false,
+      message: auth.tokenInvalid
     });
   }
 };

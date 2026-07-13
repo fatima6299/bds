@@ -19,10 +19,16 @@ function isTokenExpired(token) {
   return !payload || !payload.exp || payload.exp * 1000 < Date.now();
 }
 
+// Pas de build ES module (fichier chargé tel quel) : impossible de lire
+// import.meta.env.VITE_API_BASE_URL directement. On lit plutôt window.__API_BASE_URL__,
+// généré à partir de la même variable par le plugin Vite (voir vite.config.js) dans
+// js/config.js, chargé avant ce fichier. Si config.js est absent (page ouverte sans
+// build), on retombe sur le port 3000 du même hôte (cas du développement local).
+const DEFAULT_API_BASE_URL = window.__API_BASE_URL__
+  || `${window.location.protocol}//${window.location.hostname}:3000/api`;
+
 class BDSApiClient {
-  // Pas de build (fichier chargé tel quel) : on suppose que le backend tourne
-  // sur le port 3000 du même hôte que la page (déploiement simple).
-  constructor(baseURL = `${window.location.protocol}//${window.location.hostname}:3000/api`) {
+  constructor(baseURL = DEFAULT_API_BASE_URL) {
     this.baseURL = baseURL;
     this.token = localStorage.getItem('bds_token');
     this.user = JSON.parse(localStorage.getItem('bds_user') || 'null');
